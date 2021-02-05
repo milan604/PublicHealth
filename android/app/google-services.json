@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "786945435262",
+    "firebase_url": "https://public-health-7d949.firebaseio.com",
+    "project_id": "public-health-7d949",
+    "storage_bucket": "public-health-7d949.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786945435262:android:35fd9987a76ae017905a2f",
+        "android_client_info": {
+          "package_name": "com.mlan.PublicHealth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "786945435262-bdd1vmqgj5ohttfqe3ve4qc4dgqcgqtg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mlan.PublicHealth",
+            "certificate_hash": "4eb07628057d556255f6b36b6345708ac45c275d"
+          }
+        },
+        {
+          "client_id": "786945435262-guftid7uf4r2erpm65gi0h3hnrou5io1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs_mC0v4uNkIG_dpFD8UaHPg_XGaOxXD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "786945435262-guftid7uf4r2erpm65gi0h3hnrou5io1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "786945435262-f0thnk2pe8ubd5rcjurl8kf79pghcfdt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mlan.PublicHealth"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

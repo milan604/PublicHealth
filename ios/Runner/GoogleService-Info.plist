@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>786945435262-f0thnk2pe8ubd5rcjurl8kf79pghcfdt.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.786945435262-f0thnk2pe8ubd5rcjurl8kf79pghcfdt</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>786945435262-f5h466fa9pg69rq9hmnhjc3rj4e29umj.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA8B3HN298xO6JlVgJaMrLLDYnGjy1GaXI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>786945435262</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.mlan.PublicHealth</string>
+	<key>PROJECT_ID</key>
+	<string>public-health-7d949</string>
+	<key>STORAGE_BUCKET</key>
+	<string>public-health-7d949.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:786945435262:ios:ff21cdc1784461bf905a2f</string>
+	<key>DATABASE_URL</key>
+	<string>https://public-health-7d949.firebaseio.com</string>
+</dict>
+</plist>
