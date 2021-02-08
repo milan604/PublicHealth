@@ -8,6 +8,7 @@ import 'package:PublicHealth/src/services/authentication.dart';
 import 'bottom_navigation_view/bottom_bar_view.dart';
 import 'ph_theme.dart';
 import 'package:PublicHealth/src/ph/home/home_screen.dart';
+import 'package:PublicHealth/src/ph/scholarship/scholarship_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:PublicHealth/src/ph/models/materials.dart';
 
@@ -44,7 +45,7 @@ class _PHomeScreenState extends State<PHomeScreen>
     tabIconsList.forEach((TabIconData tab) {
       tab.isSelected = false;
     });
-    tabIconsList[0].isSelected = true;
+    tabIconsList[4].isSelected = true;
     animationController = AnimationController(
         duration: const Duration(milliseconds: 600), vsync: this);
     tabBody =
@@ -103,9 +104,9 @@ class _PHomeScreenState extends State<PHomeScreen>
                   return;
                 }
                 setState(() {
-                  tabBody = HomeScreen(
-                      animationController: animationController,
-                      user: widget.user);
+                  tabBody = ScholarshipScreen(
+                    animationController: animationController,
+                  );
                 });
               });
             } else if (index == 1) {
@@ -139,6 +140,18 @@ class _PHomeScreenState extends State<PHomeScreen>
                       auth: widget.auth,
                       user: widget.user,
                       loginFrom: widget.loginFrom);
+                });
+              });
+            } else if (index == 4) {
+              animationController.reverse().then<dynamic>((data) {
+                if (!mounted) {
+                  return;
+                }
+                setState(() {
+                  tabBody = HomeScreen(
+                    animationController: animationController,
+                    user: widget.user,
+                  );
                 });
               });
             }

@@ -22,6 +22,7 @@ class BottomBarView extends StatefulWidget {
 class _BottomBarViewState extends State<BottomBarView>
     with TickerProviderStateMixin {
   AnimationController animationController;
+  bool homeState = true;
 
   @override
   void initState() {
@@ -164,14 +165,13 @@ class _BottomBarViewState extends State<BottomBarView>
                           splashColor: Colors.white.withOpacity(0.1),
                           highlightColor: Colors.transparent,
                           focusColor: Colors.transparent,
-                          onTap: () {
-                            widget.addClick();
-                          },
-                          child: Icon(
-                            Icons.card_giftcard,
-                            color: PHTheme.white,
-                            size: 32,
-                          ),
+                          onTap: () {},
+                          child: TabIcons(
+                              tabIconData: widget.tabIconsList[4],
+                              removeAllSelect: () {
+                                setRemoveAllSelection(widget.tabIconsList[4]);
+                                widget.changeIndex(4);
+                              }),
                         ),
                       ),
                     ),

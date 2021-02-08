@@ -45,5 +45,12 @@ class TabIconData {
       isSelected: false,
       animationController: null,
     ),
+    TabIconData(
+      imagePath: 'assets/images/ph/tab_5.png',
+      selectedImagePath: 'assets/images/ph/tab_5s.png',
+      index: 4,
+      isSelected: true,
+      animationController: null,
+    )
   ];
 }

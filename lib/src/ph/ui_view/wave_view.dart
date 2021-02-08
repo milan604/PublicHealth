@@ -143,7 +143,7 @@ class _WaveViewState extends State<WaveView> with TickerProviderStateMixin {
                         fontWeight: FontWeight.w500,
                         fontSize: 24,
                         letterSpacing: 0.0,
-                        color: PHTheme.white,
+                        color: Colors.black,
                       ),
                     ),
                     Padding(

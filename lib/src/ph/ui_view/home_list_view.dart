@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:PublicHealth/src/ph/course/course_screen.dart';
 import 'package:PublicHealth/src/ph/vacancy/vacancy_screen.dart';
+import 'package:PublicHealth/src/ph/scholarship/scholarship_screen.dart';
 
 import '../ph_theme.dart';
 
@@ -165,7 +166,7 @@ class AreaView extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => VacancyScreen(
+                                builder: (context) => ScholarshipScreen(
                                     animationController: animationController)),
                           );
                         }
