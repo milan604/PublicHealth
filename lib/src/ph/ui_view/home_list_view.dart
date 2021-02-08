@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:PublicHealth/src/ph/course/course_screen.dart';
-import 'package:PublicHealth/src/ph/test/test_screen.dart';
+import 'package:PublicHealth/src/ph/vacancy/vacancy_screen.dart';
 
 import '../ph_theme.dart';
 
@@ -20,14 +20,14 @@ class _HomeListViewState extends State<HomeListView>
   AnimationController animationController;
   List<String> areaListData = <String>[
     'assets/images/study.png',
-    'assets/images/practice.png',
-    'assets/images/test.png',
+    'assets/images/scholarship.png',
+    'assets/images/headhunting.png',
     'assets/images/news.png',
   ];
   List<String> areaListLabel = <String>[
     'STUDY',
-    'PRACTICE',
-    'TEST',
+    'SCHOLARSHIP',
+    'VACANCY',
     'NEWS',
   ];
 
@@ -160,23 +160,23 @@ class AreaView extends StatelessWidget {
                         }
                         break;
 
-                      case "PRACTICE":
+                      case "SCHOLARSHIP":
                         {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => TestScreen(
+                                builder: (context) => VacancyScreen(
                                     animationController: animationController)),
                           );
                         }
                         break;
 
-                      case "TEST":
+                      case "VACANCY":
                         {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => TestScreen(
+                                builder: (context) => VacancyScreen(
                                     animationController: animationController)),
                           );
                         }
@@ -201,14 +201,17 @@ class AreaView extends StatelessWidget {
                     }
                   },
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Padding(
                         padding:
                             const EdgeInsets.only(top: 16, left: 16, right: 16),
                         child: Image.asset(
                           imagepath,
-                          height: 110,
-                          width: 100,
+                          height:
+                              0.19 * MediaQuery.of(context).size.height, //110
+                          width: 0.19 * MediaQuery.of(context).size.width, //110
                         ),
                       ),
                       Text(

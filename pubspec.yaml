@@ -34,10 +34,11 @@ dependencies:
   cloud_firestore: ^0.16.0
   firebase_core: ^0.7.0
   lite_rolling_switch: ^0.1.1
-  video_player: ^0.10.11+2
-  chewie: 0.9.10
+  # video_player: ^0.10.11+2
+  # chewie: 0.9.10
   flutter_facebook_login: ^3.0.0
   corsac_jwt: ^0.4.0
+  youtube_player_flutter: ^7.0.0+7
 
 dev_dependencies:
   flutter_test:

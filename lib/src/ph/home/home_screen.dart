@@ -252,7 +252,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Padding(
                         padding: EdgeInsets.only(
                             left: 16,
-                            right: 16,
                             top: 16 - 8.0 * topBarOpacity,
                             bottom: 12 - 8.0 * topBarOpacity),
                         child: Row(
@@ -291,20 +290,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(
-                                left: 8,
-                                right: 8,
-                              ),
+                              padding: const EdgeInsets.only(left: 16),
                               child: Row(
                                 children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8),
-                                    child: Image.network(
-                                      widget.user.photoURL,
-                                      width: 30,
-                                      height: 30,
-                                    ),
-                                  ),
                                   Text(
                                     widget.user.displayName,
                                     textAlign: TextAlign.left,
@@ -314,6 +302,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       fontSize: 18,
                                       letterSpacing: -0.2,
                                       color: Color(0xff230fba),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Image.network(
+                                      widget.user.photoURL,
+                                      width: 30,
+                                      height: 30,
                                     ),
                                   ),
                                 ],

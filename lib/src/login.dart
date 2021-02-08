@@ -162,12 +162,13 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _rootPage() {
+  Widget _rootPage(height) {
     return Scaffold(
       body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20),
-          height: MediaQuery.of(context).size.height,
+          height: height,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(5)),
               boxShadow: <BoxShadow>[
@@ -185,6 +186,9 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              SizedBox(
+                height: 30,
+              ),
               _title(),
               SizedBox(
                 height: 80,
@@ -203,6 +207,14 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _rootPage();
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        if (orientation == Orientation.portrait) {
+          return _rootPage(MediaQuery.of(context).size.height);
+        } else {
+          return _rootPage(null);
+        }
+      },
+    );
   }
 }

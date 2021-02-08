@@ -17,8 +17,8 @@ class _TestMaterialViewState extends State<TestMaterialView>
     with TickerProviderStateMixin {
   AnimationController animationController;
   List<String> testListData = <String>[
-    'assets/images/practice.png',
-    'assets/images/test.png'
+    'assets/images/scholarship.png',
+    'assets/images/headhunting.png'
   ];
 
   List<String> areaListLabel = <String>['PRACTICE', 'EXAM'];

@@ -5,8 +5,10 @@ import 'package:vector_math/vector_math.dart' as vector;
 
 class WaveView extends StatefulWidget {
   final double percentageValue;
+  final int remainingDays;
 
-  const WaveView({Key key, this.percentageValue = 100.0}) : super(key: key);
+  const WaveView({Key key, this.percentageValue = 100.0, this.remainingDays})
+      : super(key: key);
   @override
   _WaveViewState createState() => _WaveViewState();
 }
@@ -129,12 +131,12 @@ class _WaveViewState extends State<WaveView> with TickerProviderStateMixin {
             Padding(
               padding: const EdgeInsets.only(top: 48),
               child: Center(
-                child: Row(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      widget.percentageValue.round().toString(),
+                      widget.remainingDays.toString(),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: PHTheme.fontName,
@@ -147,14 +149,14 @@ class _WaveViewState extends State<WaveView> with TickerProviderStateMixin {
                     Padding(
                       padding: const EdgeInsets.only(top: 3.0),
                       child: Text(
-                        '%',
+                        'Days Remain',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: PHTheme.fontName,
                           fontWeight: FontWeight.w500,
                           fontSize: 14,
                           letterSpacing: 0.0,
-                          color: PHTheme.white,
+                          color: Colors.black,
                         ),
                       ),
                     ),

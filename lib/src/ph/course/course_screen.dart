@@ -2,6 +2,8 @@ import 'package:PublicHealth/src/ph/ui_view/course_materials.dart';
 import 'package:PublicHealth/src/ph/ui_view/title_view.dart';
 import 'package:PublicHealth/src/ph/ui_view/video_section.dart';
 import 'package:flutter/material.dart';
+import 'package:PublicHealth/src/ph/models/materials.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../ph_theme.dart';
 
@@ -16,6 +18,8 @@ class CourseScreen extends StatefulWidget {
 class _CourseScreenState extends State<CourseScreen>
     with TickerProviderStateMixin {
   Animation<double> topBarAnimation;
+  Materials videoDta;
+  String errorMessage;
 
   List<Widget> listViews = <Widget>[];
   final ScrollController scrollController = ScrollController();
@@ -27,8 +31,7 @@ class _CourseScreenState extends State<CourseScreen>
         CurvedAnimation(
             parent: widget.animationController,
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
-    addAllListData();
-
+    getLatestVideo();
     scrollController.addListener(() {
       if (scrollController.offset >= 24) {
         if (topBarOpacity != 1.0) {
@@ -77,6 +80,7 @@ class _CourseScreenState extends State<CourseScreen>
             curve:
                 Interval((1 / count) * 2, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
+        videoData: videoDta,
       ),
     );
 
@@ -102,6 +106,30 @@ class _CourseScreenState extends State<CourseScreen>
         mainScreenAnimationController: widget.animationController,
       ),
     );
+  }
+
+  getLatestVideo() {
+    CollectionReference videoRef =
+        FirebaseFirestore.instance.collection("materials");
+
+    videoRef
+        .where('Type', isEqualTo: "videos")
+        .orderBy('Timestamp', descending: true)
+        .snapshots()
+        .listen((event) {
+      if (event != null) {
+        setState(() {
+          videoDta =
+              event.docs.map((e) => Materials.fromFirestore(e)).toList().first;
+        });
+
+        addAllListData();
+      }
+    }, onError: (e) {
+      setState(() {
+        errorMessage = e.toString();
+      });
+    });
   }
 
   Future<bool> getData() async {
@@ -209,67 +237,67 @@ class _CourseScreenState extends State<CourseScreen>
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              height: 38,
-                              width: 38,
-                              child: InkWell(
-                                highlightColor: Colors.transparent,
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(32.0)),
-                                onTap: () {},
-                                child: Center(
-                                  child: Icon(
-                                    Icons.keyboard_arrow_left,
-                                    color: PHTheme.grey,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 8,
-                                right: 8,
-                              ),
-                              child: Row(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8),
-                                    child: Icon(
-                                      Icons.calendar_today,
-                                      color: PHTheme.grey,
-                                      size: 18,
-                                    ),
-                                  ),
-                                  Text(
-                                    '15 May',
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      fontFamily: PHTheme.fontName,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 18,
-                                      letterSpacing: -0.2,
-                                      color: PHTheme.darkerText,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 38,
-                              width: 38,
-                              child: InkWell(
-                                highlightColor: Colors.transparent,
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(32.0)),
-                                onTap: () {},
-                                child: Center(
-                                  child: Icon(
-                                    Icons.keyboard_arrow_right,
-                                    color: PHTheme.grey,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // SizedBox(
+                            //   height: 38,
+                            //   width: 38,
+                            //   child: InkWell(
+                            //     highlightColor: Colors.transparent,
+                            //     borderRadius: const BorderRadius.all(
+                            //         Radius.circular(32.0)),
+                            //     onTap: () {},
+                            //     child: Center(
+                            //       child: Icon(
+                            //         Icons.keyboard_arrow_left,
+                            //         color: PHTheme.grey,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
+                            // Padding(
+                            //   padding: const EdgeInsets.only(
+                            //     left: 8,
+                            //     right: 8,
+                            //   ),
+                            //   child: Row(
+                            //     children: <Widget>[
+                            //       Padding(
+                            //         padding: const EdgeInsets.only(right: 8),
+                            //         child: Icon(
+                            //           Icons.calendar_today,
+                            //           color: PHTheme.grey,
+                            //           size: 18,
+                            //         ),
+                            //       ),
+                            //       Text(
+                            //         '15 May',
+                            //         textAlign: TextAlign.left,
+                            //         style: TextStyle(
+                            //           fontFamily: PHTheme.fontName,
+                            //           fontWeight: FontWeight.normal,
+                            //           fontSize: 18,
+                            //           letterSpacing: -0.2,
+                            //           color: PHTheme.darkerText,
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            // SizedBox(
+                            //   height: 38,
+                            //   width: 38,
+                            //   child: InkWell(
+                            //     highlightColor: Colors.transparent,
+                            //     borderRadius: const BorderRadius.all(
+                            //         Radius.circular(32.0)),
+                            //     onTap: () {},
+                            //     child: Center(
+                            //       child: Icon(
+                            //         Icons.keyboard_arrow_right,
+                            //         color: PHTheme.grey,
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       )

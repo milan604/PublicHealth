@@ -10,6 +10,7 @@ class Materials {
     this.author = '',
     this.filePath = '',
     this.link = '',
+    this.timestamp = '',
   });
 
   String description;
@@ -20,18 +21,20 @@ class Materials {
   String filePath;
   String id;
   String link;
+  String timestamp;
 
   factory Materials.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data();
     return Materials(
       id: doc.id,
-      title: data["Title"] ?? null,
+      title: data["Title"] ?? "",
       description: data["Description"] ?? null,
       author: data["Author"] ?? null,
       filePath: data["FilePath"] ?? null,
-      link: data["Link"] ?? null,
+      link: data["Link"] ?? "",
       startColor: '#738AE6',
       endColor: '#5C5EDD',
+      timestamp: data["Timestamp"] ?? null,
     );
   }
 

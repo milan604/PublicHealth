@@ -1,5 +1,6 @@
 import 'package:PublicHealth/src/ph/ph_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:PublicHealth/src/ph/course/course_list.dart';
 
 class TitleView extends StatelessWidget {
   final String titleTxt;
@@ -48,7 +49,17 @@ class TitleView extends StatelessWidget {
                     InkWell(
                       highlightColor: Colors.transparent,
                       borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                      onTap: () {},
+                      onTap: () {
+                        if (titleTxt == "Video Lesson") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ListContent(
+                                    animationController: animationController,
+                                    label: "VIDEOS")),
+                          );
+                        }
+                      },
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8),
                         child: Row(

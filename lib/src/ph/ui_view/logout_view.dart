@@ -62,7 +62,7 @@ class LogoutView extends StatelessWidget {
                                         top: 10,
                                         bottom: 10,
                                       ),
-                                      child: _logoutButton(),
+                                      child: _logoutButton(context),
                                     ),
                                   ]),
                                 ],
@@ -82,7 +82,7 @@ class LogoutView extends StatelessWidget {
     );
   }
 
-  Widget _logoutButton() {
+  Widget _logoutButton(context) {
     return Material(
         child: InkWell(
       splashColor: Colors.blue,
@@ -90,7 +90,7 @@ class LogoutView extends StatelessWidget {
         logout();
       },
       child: Container(
-        width: 500,
+        width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.symmetric(vertical: 13),
         alignment: Alignment.center,
         decoration: BoxDecoration(

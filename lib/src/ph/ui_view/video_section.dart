@@ -1,14 +1,16 @@
 import 'package:PublicHealth/main.dart';
 import 'package:flutter/material.dart';
 import '../ph_theme.dart';
-import 'package:video_player/video_player.dart';
-import 'package:chewie/chewie.dart';
+import 'package:PublicHealth/src/ph/models/materials.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class VideoLessionView extends StatefulWidget {
   final AnimationController animationController;
   final Animation animation;
+  final Materials videoData;
 
-  const VideoLessionView({Key key, this.animationController, this.animation})
+  const VideoLessionView(
+      {Key key, this.animationController, this.animation, this.videoData})
       : super(key: key);
 
   @override
@@ -16,30 +18,37 @@ class VideoLessionView extends StatefulWidget {
 }
 
 class _VideoLessionViewState extends State<VideoLessionView> {
-  ChewieController _chewieController;
-  VideoPlayerController _controller;
+  // ChewieController _chewieController;
+  YoutubePlayerController _controller;
+  // VideoPlayerController _controller;
+  Materials videoDta;
+  String errorMessage;
 
   @override
   void initState() {
-    _controller = VideoPlayerController.asset('assets/images/test_sample.mp4');
-    _chewieController = ChewieController(
-      videoPlayerController: _controller,
-      aspectRatio: 16 / 9,
-      autoInitialize: true,
-      looping: true,
-      errorBuilder: (context, errorMessage) {
-        return Center(
-          child: Icon(Icons.error),
-        );
-      },
+    _controller = YoutubePlayerController(
+      initialVideoId: YoutubePlayer.convertUrlToId(widget.videoData.link),
+      flags: YoutubePlayerFlags(
+          enableCaption: false, autoPlay: false, isLive: false),
     );
+    // _chewieController = ChewieController(
+    //   videoPlayerController: _controller,
+    //   aspectRatio: 16 / 9,
+    //   autoInitialize: true,
+    //   looping: true,
+    //   errorBuilder: (context, errorMessage) {
+    //     return Center(
+    //       child: Icon(Icons.error),
+    //     );
+    //   },
+    // );
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _chewieController.dispose();
+    // _chewieController.dispose();
     super.dispose();
   }
 
@@ -94,7 +103,7 @@ class _VideoLessionViewState extends State<VideoLessionView> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
-                          'Easy way to create odk questionaire form for field survey using kobo toolbox',
+                          widget.videoData.title,
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             fontFamily: PHTheme.fontName,
@@ -125,7 +134,7 @@ class _VideoLessionViewState extends State<VideoLessionView> {
                             Padding(
                               padding: const EdgeInsets.only(left: 4.0),
                               child: Text(
-                                '20 min',
+                                _controller.metadata.duration.toString(),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontFamily: PHTheme.fontName,
@@ -158,9 +167,9 @@ class _VideoLessionViewState extends State<VideoLessionView> {
                                     Icons.arrow_right,
                                     color: HexColor("#6F56E8"),
                                     size: 44,
-                                  ),
+                                  ),     
                                   onTap: () {
-                                    // Dialog Start here
+                                    //Dialog Start here
                                     showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
@@ -174,14 +183,19 @@ class _VideoLessionViewState extends State<VideoLessionView> {
                                               child: Padding(
                                                 padding:
                                                     const EdgeInsets.all(0.0),
-                                                child: Chewie(
-                                                  controller: _chewieController,
+                                                child: YoutubePlayerBuilder(
+                                                  player: YoutubePlayer(
+                                                    controller: _controller,
+                                                  ),
+                                                  builder: (context, player) {
+                                                    return Text("Nice player");
+                                                  },
                                                 ),
                                               ),
                                             ),
                                           );
                                         });
-                                    // Dialog Ends here
+                                    //Dialog Ends here
                                   },
                                 ),
                               ),

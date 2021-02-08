@@ -2,13 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:PublicHealth/src/ph/course/course_screen.dart';
 import 'package:PublicHealth/src/ph/models/tabIcon_data.dart';
 import 'package:PublicHealth/src/ph/profile/profile_screen.dart';
-import 'package:PublicHealth/src/ph/test/test_screen.dart';
+import 'package:PublicHealth/src/ph/vacancy/vacancy_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:PublicHealth/src/services/authentication.dart';
 import 'bottom_navigation_view/bottom_bar_view.dart';
 import 'ph_theme.dart';
 import 'package:PublicHealth/src/ph/home/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:PublicHealth/src/ph/models/materials.dart';
 
 final userRef = FirebaseFirestore.instance.collection("users");
 
@@ -28,6 +29,8 @@ class PHomeScreen extends StatefulWidget {
 class _PHomeScreenState extends State<PHomeScreen>
     with TickerProviderStateMixin {
   AnimationController animationController;
+  Materials videoDta;
+  String errorMessage;
 
   List<TabIconData> tabIconsList = TabIconData.tabIconsList;
 
@@ -122,7 +125,7 @@ class _PHomeScreenState extends State<PHomeScreen>
                 }
                 setState(() {
                   tabBody =
-                      TestScreen(animationController: animationController);
+                      VacancyScreen(animationController: animationController);
                 });
               });
             } else if (index == 3) {

@@ -24,6 +24,8 @@ class _CourseMaterialViewState extends State<CourseMaterialView>
     'assets/images/videos.png',
   ];
 
+  GlobalKey _keyReadSize = GlobalKey();
+
   List<String> areaListLabel = <String>[
     'BOOKS',
     'SLIDES',
@@ -81,6 +83,7 @@ class _CourseMaterialViewState extends State<CourseMaterialView>
                         label: areaListLabel[index],
                         animation: animation,
                         animationController: animationController,
+                        gKey: _keyReadSize,
                       );
                     },
                   ),
@@ -107,12 +110,14 @@ class AreaView extends StatelessWidget {
     this.label,
     this.animationController,
     this.animation,
+    this.gKey,
   }) : super(key: key);
 
   final String imagepath;
   final String label;
   final AnimationController animationController;
   final Animation<dynamic> animation;
+  final GlobalKey gKey;
 
   @override
   Widget build(BuildContext context) {
@@ -157,14 +162,17 @@ class AreaView extends StatelessWidget {
                     );
                   },
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Padding(
                         padding:
                             const EdgeInsets.only(top: 16, left: 16, right: 16),
                         child: Image.asset(
                           imagepath,
-                          height: 120,
-                          width: 120,
+                          height:
+                              0.11 * MediaQuery.of(context).size.height, //120
+                          width: 0.5 * MediaQuery.of(context).size.width, //120
                         ),
                       ),
                       Text(
