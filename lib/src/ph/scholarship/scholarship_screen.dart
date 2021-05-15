@@ -1,7 +1,9 @@
+import 'package:PublicHealth/main.dart';
 import 'package:PublicHealth/src/ph/ui_view/title_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:PublicHealth/src/ph/models/vacancies.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 
 import '../ph_theme.dart';
 
@@ -94,11 +96,13 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
 
   void addAllListData(List data) {
     const int count = 5;
-    int itemCount = data.length;
 
     listViews.add(
       TitleView(
-        titleTxt: 'All available vacancies ' + '(' + itemCount.toString() + ')',
+        titleTxt: 'Scholarship Timeline ' +
+            '(' +
+            DateTime.now().year.toString() +
+            ')',
         showIcon: false,
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
@@ -118,169 +122,169 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
     //     ),
     //   );
 
-    //   listViews.add(
-    //     AnimatedBuilder(
-    //       animation: widget.animationController,
-    //       builder: (BuildContext context, Widget child) {
-    //         return FadeTransition(
-    //             opacity: animation,
-    //             child: Transform(
-    //               transform: Matrix4.translationValues(
-    //                   100 * (1.0 - animation.value), 0.0, 0.0),
-    //               child: Material(
-    //                   color: Colors.transparent,
-    //                   child: InkWell(
-    //                     focusColor: Colors.transparent,
-    //                     highlightColor: Colors.transparent,
-    //                     hoverColor: Colors.transparent,
-    //                     borderRadius:
-    //                         const BorderRadius.all(Radius.circular(8.0)),
-    //                     splashColor: PHTheme.nearlyDarkBlue,
-    //                     onTap: () {
-    //                       // Navigator.push(
-    //                       //   context,
-    //                       //   MaterialPageRoute(
-    //                       //       builder: (context) => SearchData(
-    //                       //           animationController:
-    //                       //               widget.animationController,
-    //                       //           topicID: "test",
-    //                       //           title: "test")),
-    //                       // );
-    //                     },
-    //                     child: Container(
-    //                       padding: EdgeInsets.all(10.0),
-    //                       decoration: BoxDecoration(
-    //                         borderRadius: BorderRadius.only(
-    //                             topLeft: Radius.circular(8.0),
-    //                             bottomLeft: Radius.circular(30.0),
-    //                             bottomRight: Radius.circular(8.0),
-    //                             topRight: Radius.circular(30.0)),
-    //                         boxShadow: <BoxShadow>[
-    //                           BoxShadow(
-    //                               color: HexColor("#FE95B6").withOpacity(0.6),
-    //                               offset: const Offset(1.1, 4.0),
-    //                               blurRadius: 8.0),
-    //                         ],
-    //                         gradient: LinearGradient(
-    //                           colors: <HexColor>[
-    //                             HexColor("#43cea2"),
-    //                             HexColor("#185a9d"),
-    //                           ],
-    //                           begin: Alignment.centerLeft,
-    //                           end: Alignment.centerRight,
-    //                         ),
-    //                       ),
-    //                       child: Row(
-    //                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                         children: <Widget>[
-    //                           Expanded(
-    //                               child: Column(
-    //                             mainAxisAlignment: MainAxisAlignment.start,
-    //                             crossAxisAlignment: CrossAxisAlignment.start,
-    //                             children: <Widget>[
-    //                               Text(
-    //                                 data[i].title,
-    //                                 style: TextStyle(
-    //                                     color: Colors.white70,
-    //                                     fontSize: 25,
-    //                                     fontWeight: FontWeight.bold),
-    //                               ),
-    //                               RichText(
-    //                                 textAlign: TextAlign.center,
-    //                                 text: TextSpan(
-    //                                     text: "Deadline: ",
-    //                                     style: TextStyle(
-    //                                         color: Colors.white70,
-    //                                         fontSize: 15,
-    //                                         fontWeight: FontWeight.bold),
-    //                                     children: [
-    //                                       TextSpan(
-    //                                         text: data[i].endDate,
-    //                                         style: TextStyle(
-    //                                             color: Colors.black,
-    //                                             fontSize: 15),
-    //                                       ),
-    //                                     ]),
-    //                               ),
-    //                               RichText(
-    //                                 textAlign: TextAlign.center,
-    //                                 text: TextSpan(
-    //                                     text: "Vacancy Period: ",
-    //                                     style: TextStyle(
-    //                                         color: Colors.white70,
-    //                                         fontSize: 15,
-    //                                         fontWeight: FontWeight.bold),
-    //                                     children: [
-    //                                       TextSpan(
-    //                                         text: getDays(data[i].startDate,
-    //                                                     data[i].endDate)
-    //                                                 .toString() +
-    //                                             ' Days',
-    //                                         style: TextStyle(
-    //                                             color: Colors.black,
-    //                                             fontSize: 15),
-    //                                       ),
-    //                                     ]),
-    //                               ),
-    //                               Padding(
-    //                                   padding: EdgeInsets.only(left: 8),
-    //                                   child: Text(
-    //                                     data[i].description,
-    //                                     style: TextStyle(
-    //                                       color: Colors.black,
-    //                                       fontSize: 15,
-    //                                     ),
-    //                                   )),
-    //                             ],
-    //                           )),
-    //                           Row(
-    //                             children: <Widget>[
-    //                               Padding(
-    //                                 padding: const EdgeInsets.only(
-    //                                     left: 16, right: 8, top: 16),
-    //                                 child: Container(
-    //                                   width: 60,
-    //                                   height: 160,
-    //                                   decoration: BoxDecoration(
-    //                                     color: HexColor('#E8EDFE'),
-    //                                     borderRadius: const BorderRadius.only(
-    //                                         topLeft: Radius.circular(80.0),
-    //                                         bottomLeft: Radius.circular(80.0),
-    //                                         bottomRight: Radius.circular(80.0),
-    //                                         topRight: Radius.circular(80.0)),
-    //                                     boxShadow: <BoxShadow>[
-    //                                       BoxShadow(
-    //                                           color:
-    //                                               PHTheme.grey.withOpacity(0.4),
-    //                                           offset: const Offset(2, 2),
-    //                                           blurRadius: 4),
-    //                                     ],
-    //                                   ),
-    //                                   child: WaveView(
-    //                                     percentageValue: getPercentage(
-    //                                         data[i].startDate, data[i].endDate),
-    //                                     remainingDays: getDays(
-    //                                         DateTime.now().toString(),
-    //                                         data[i].endDate),
-    //                                   ),
-    //                                 ),
-    //                               )
-    //                             ],
-    //                           )
-    //                         ],
-    //                       ),
-    //                     ),
-    //                   )),
-    //             ));
-    //       },
-    //     ),
-    //   );
+    listViews.add(Container(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          TimelineTile(
+            alignment: TimelineAlign.center,
+            lineXY: 0.1,
+            isFirst: true,
+            indicatorStyle: const IndicatorStyle(
+              width: 20,
+              color: Colors.green,
+            ),
+            beforeLineStyle: const LineStyle(
+              color: Colors.green,
+              thickness: 6,
+            ),
+          ),
+          TimelineDivider(
+            axis: TimelineAxis.horizontal,
+            begin: 0.01,
+            end: 0.5,
+            thickness: 6,
+            color: Colors.orange,
+          ),
+          TimelineTile(
+            alignment: TimelineAlign.center,
+            lineXY: 0.001,
+            beforeLineStyle: const LineStyle(
+              color: Colors.green,
+              thickness: 6,
+            ),
+            afterLineStyle: const LineStyle(
+              color: Colors.green,
+              thickness: 6,
+            ),
+            indicatorStyle: IndicatorStyle(
+              indicator: dateBox("Sep 04, 2021", true),
+              indicatorXY: 0.001,
+              width: 150,
+              height: 40,
+              color: Colors.green,
+            ),
+          ),
+          TimelineTile(
+            alignment: TimelineAlign.center,
+            lineXY: 0.5,
+            beforeLineStyle: const LineStyle(
+              color: Colors.green,
+              thickness: 6,
+            ),
+            afterLineStyle: const LineStyle(
+              color: Colors.green,
+              thickness: 6,
+            ),
+            indicatorStyle: IndicatorStyle(
+              indicatorXY: 0.01,
+              width: 5,
+              color: Colors.green,
+            ),
+          ),
+          TimelineDivider(
+            axis: TimelineAxis.horizontal,
+            begin: 0.5,
+            end: 0.99,
+            thickness: 6,
+            color: Colors.orange,
+          ),
+          TimelineTile(
+            alignment: TimelineAlign.center,
+            lineXY: 0.5,
+            beforeLineStyle: const LineStyle(
+              color: Colors.green,
+              thickness: 6,
+            ),
+            afterLineStyle: const LineStyle(
+              color: Colors.green,
+              thickness: 6,
+            ),
+            indicatorStyle: IndicatorStyle(
+              indicator: dateBox("Dec 20, 2021", false),
+              indicatorXY: 0.001,
+              width: 150,
+              height: 40,
+              color: Colors.green,
+            ),
+          ),
+          TimelineTile(
+            alignment: TimelineAlign.center,
+            lineXY: 0.5,
+            beforeLineStyle: const LineStyle(
+              color: Colors.green,
+              thickness: 6,
+            ),
+            afterLineStyle: const LineStyle(
+              color: Colors.green,
+              thickness: 6,
+            ),
+            indicatorStyle: IndicatorStyle(
+              width: 5,
+              color: Colors.green,
+            ),
+          ),
+          TimelineTile(
+            alignment: TimelineAlign.center,
+            lineXY: 0.1,
+            isLast: true,
+            beforeLineStyle: const LineStyle(
+              color: Colors.green,
+              thickness: 6,
+            ),
+            indicatorStyle: const IndicatorStyle(
+              width: 20,
+              color: Colors.green,
+            ),
+          ),
+        ],
+      ),
+    ));
     // }
   }
 
   Future<bool> getData() async {
     await Future<dynamic>.delayed(const Duration(milliseconds: 50));
     return true;
+  }
+
+  Widget dateBox(String date, bool flag) {
+    return Material(
+        color: HexColor("#F2F3F8"),
+        // color: Colors.transparent,
+        child: InkWell(
+          splashColor: Colors.white,
+          onTap: () {},
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              // borderRadius: BorderRadius.all(Radius.circular(5)),
+              // border: Border.all(color: Colors.orange, width: 6),
+              border: flag
+                  ? Border(
+                      bottom: BorderSide(width: 3, color: Colors.orange),
+                      right: BorderSide(width: 4, color: Colors.orange),
+                      left: BorderSide(width: 1, color: Colors.orange),
+                      top: BorderSide(width: 1, color: Colors.orange))
+                  : Border(
+                      bottom: BorderSide(width: 3, color: Colors.orange),
+                      left: BorderSide(width: 4, color: Colors.orange),
+                      top: BorderSide(width: 1, color: Colors.orange),
+                      right: BorderSide(width: 1, color: Colors.orange)),
+            ),
+            child: Text(
+              date,
+              style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.purple,
+                  fontFamily: "Poppins",
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ));
   }
 
   @override

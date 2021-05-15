@@ -1,6 +1,5 @@
 import 'package:corsac_jwt/corsac_jwt.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 final secretRef = FirebaseFirestore.instance.collection("secretKey");
 

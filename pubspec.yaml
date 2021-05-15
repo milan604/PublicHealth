@@ -39,10 +39,18 @@ dependencies:
   flutter_facebook_login: ^3.0.0
   corsac_jwt: ^0.4.0
   youtube_player_flutter: ^7.0.0+7
+  timeline_tile: ^1.0.0
+  flutter_launcher_icons: ^0.8.1
+  open_file: ^3.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/pub_logo_nontransparent.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

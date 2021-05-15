@@ -1,5 +1,3 @@
-import 'package:PublicHealth/src/ph/ph_home_screen.dart';
-import 'package:PublicHealth/src/services/authentication.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:PublicHealth/src/ph/ui_view/home_list_view.dart';
 import 'package:PublicHealth/src/ph/ui_view/news_section.dart';

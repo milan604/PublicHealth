@@ -210,7 +210,8 @@ class _SearchDataState extends State<SearchData> with TickerProviderStateMixin {
                               end: Alignment.bottomRight,
                             ),
                           ),
-                          child: Row(
+                          child: Expanded(
+                              child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text(
@@ -242,7 +243,7 @@ class _SearchDataState extends State<SearchData> with TickerProviderStateMixin {
                                 ),
                               ),
                             ],
-                          ),
+                          )),
                         )),
                   ));
             },

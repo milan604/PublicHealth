@@ -95,11 +95,17 @@ class _VacancyScreenState extends State<VacancyScreen>
 
   void addAllListData(List data) {
     const int count = 5;
+    int c = 0;
     int itemCount = data.length;
 
+    for (int j = 0; j < itemCount; j++) {
+      if (getDays(DateTime.now().toString(), data[j].endDate) > 0) {
+        c++;
+      }
+    }
     listViews.add(
       TitleView(
-        titleTxt: 'All available vacancies ' + '(' + itemCount.toString() + ')',
+        titleTxt: 'All available vacancies ' + '(' + c.toString() + ')',
         showIcon: false,
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
