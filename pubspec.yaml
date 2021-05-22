@@ -41,7 +41,12 @@ dependencies:
   youtube_player_flutter: ^7.0.0+7
   timeline_tile: ^1.0.0
   flutter_launcher_icons: ^0.8.1
-  open_file: ^3.1.0
+  open_file: ^3.2.1
+  bubble_tab_indicator: ^0.1.6
+  modal_bottom_sheet: ^2.0.0
+  flutter_downloader: ^1.6.0
+  path_provider: ^2.0.1
+  permission_handler: ^5.1.0+2
 
 dev_dependencies:
   flutter_test:
