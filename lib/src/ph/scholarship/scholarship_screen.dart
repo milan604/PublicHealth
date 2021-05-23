@@ -2,8 +2,12 @@ import 'package:PublicHealth/main.dart';
 import 'package:PublicHealth/src/ph/ui_view/title_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:PublicHealth/src/ph/models/vacancies.dart';
+import 'package:PublicHealth/src/ph/models/scholarships.dart';
 import 'package:timeline_tile/timeline_tile.dart';
+import 'package:intl/intl.dart';
+import "package:collection/collection.dart";
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../ph_theme.dart';
 
@@ -32,7 +36,7 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
         CurvedAnimation(
             parent: widget.animationController,
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
-    getVacancy();
+    getScholarship();
 
     scrollController.addListener(() {
       if (scrollController.offset >= 24) {
@@ -59,16 +63,20 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
     super.initState();
   }
 
-  getVacancy() {
-    CollectionReference videoRef =
-        FirebaseFirestore.instance.collection("vacancies");
+  getScholarship() {
+    Query scholarRef = FirebaseFirestore.instance
+        .collection("scholarship")
+        .orderBy("startDate");
 
-    videoRef.snapshots().listen((event) {
+    scholarRef.snapshots().listen((event) {
       if (event != null) {
-        setState(() {
-          data = event.docs.map((e) => Vacancies.fromFirestore(e)).toList();
-          listViews = <Widget>[];
-        });
+        if (this.mounted) {
+          setState(() {
+            data =
+                event.docs.map((e) => Scholarships.fromFirestore(e)).toList();
+            listViews = <Widget>[];
+          });
+        }
         addAllListData(data);
       }
     }, onError: (e) {
@@ -78,25 +86,15 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
     });
   }
 
-  getDays(startDate, endDate) {
-    var date = DateTime.parse(endDate);
-    var sDate = DateTime.parse(startDate);
-
-    return date.difference(sDate).inDays;
-  }
-
-  getPercentage(startDate, endDate) {
-    var currentDate = DateTime.now();
-    var totaldays = getDays(startDate, endDate);
-    var remainingDays = getDays(currentDate.toString(), endDate);
-
-    var percentage = remainingDays / totaldays * 100.0;
-    return percentage;
+  String extractDate(Timestamp time) {
+    var datetime = DateTime.fromMillisecondsSinceEpoch(time.seconds * 1000);
+    var format = DateFormat.yMd();
+    var date = format.format(datetime);
+    return date;
   }
 
   void addAllListData(List data) {
     const int count = 5;
-
     listViews.add(
       TitleView(
         titleTxt: 'Scholarship Timeline ' +
@@ -112,141 +110,479 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
       ),
     );
 
-    // for (int i = 0; i < itemCount; i++) {
-    //   final Animation<double> animation =
-    //       Tween<double>(begin: 0.0, end: 1.0).animate(
-    //     CurvedAnimation(
-    //       parent: widget.animationController,
-    //       curve:
-    //           Interval((1 / itemCount) * i, 1.0, curve: Curves.fastOutSlowIn),
-    //     ),
-    //   );
+    var groupedData = {};
+    data.forEach((element) {
+      var date = extractDate(element.startDate);
+      var payload = {
+        "description": element.description,
+        "title": element.title,
+        "startDate": date,
+        "endDate": element.endDate,
+        "issuer": element.issuer,
+        "post": element.post,
+        "location": element.location,
+        "link": element.link,
+      };
 
-    listViews.add(Container(
-      color: Colors.transparent,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          TimelineTile(
-            alignment: TimelineAlign.center,
-            lineXY: 0.1,
-            isFirst: true,
-            indicatorStyle: const IndicatorStyle(
-              width: 20,
-              color: Colors.green,
-            ),
-            beforeLineStyle: const LineStyle(
-              color: Colors.green,
-              thickness: 6,
-            ),
-          ),
-          TimelineDivider(
-            axis: TimelineAxis.horizontal,
-            begin: 0.01,
-            end: 0.5,
-            thickness: 6,
+      if (groupedData[date] == null) {
+        groupedData[date] = [payload];
+      } else {
+        var arr = groupedData[date];
+        arr.add(payload);
+        groupedData[date] = arr;
+      }
+    });
+
+    int itemCount = groupedData.length;
+    final children = <Widget>[];
+    int i = 0;
+    groupedData.forEach((key, value) {
+      var date = key;
+      if (i == 0) {
+        children.add(TimelineTile(
+          alignment: TimelineAlign.center,
+          lineXY: 0.1,
+          isFirst: true,
+          indicatorStyle: const IndicatorStyle(
+            width: 20,
             color: Colors.orange,
           ),
-          TimelineTile(
-            alignment: TimelineAlign.center,
-            lineXY: 0.001,
-            beforeLineStyle: const LineStyle(
-              color: Colors.green,
-              thickness: 6,
-            ),
-            afterLineStyle: const LineStyle(
-              color: Colors.green,
-              thickness: 6,
-            ),
-            indicatorStyle: IndicatorStyle(
-              indicator: dateBox("Sep 04, 2021", true),
-              indicatorXY: 0.001,
-              width: 150,
-              height: 40,
-              color: Colors.green,
-            ),
+          beforeLineStyle: const LineStyle(
+            color: Colors.orange,
+            thickness: 6,
           ),
-          TimelineTile(
-            alignment: TimelineAlign.center,
-            lineXY: 0.5,
-            beforeLineStyle: const LineStyle(
-              color: Colors.green,
-              thickness: 6,
-            ),
-            afterLineStyle: const LineStyle(
-              color: Colors.green,
-              thickness: 6,
-            ),
-            indicatorStyle: IndicatorStyle(
-              indicatorXY: 0.01,
-              width: 5,
-              color: Colors.green,
-            ),
-          ),
-          TimelineDivider(
+        ));
+      }
+      if (checkEven(i + 1) == false) {
+        if (i != 0) {
+          children.add(TimelineDivider(
             axis: TimelineAxis.horizontal,
             begin: 0.5,
             end: 0.99,
             thickness: 6,
             color: Colors.orange,
+          ));
+        }
+        children.add(TimelineTile(
+          alignment: TimelineAlign.center,
+          lineXY: 0.001,
+          beforeLineStyle: const LineStyle(
+            color: Colors.orange,
+            thickness: 6,
           ),
-          TimelineTile(
+          afterLineStyle: const LineStyle(
+            color: Colors.orange,
+            thickness: 6,
+          ),
+          indicatorStyle: IndicatorStyle(
+            indicator: dateBox(date.toString(), true),
+            indicatorXY: 1,
+            width: 100,
+            height: 40,
+            color: Colors.orange,
+          ),
+        ));
+        children.add(TimelineTile(
             alignment: TimelineAlign.center,
-            lineXY: 0.5,
+            lineXY: 0.001,
             beforeLineStyle: const LineStyle(
-              color: Colors.green,
+              color: Colors.orange,
               thickness: 6,
             ),
             afterLineStyle: const LineStyle(
-              color: Colors.green,
+              color: Colors.orange,
               thickness: 6,
             ),
             indicatorStyle: IndicatorStyle(
-              indicator: dateBox("Dec 20, 2021", false),
-              indicatorXY: 0.001,
-              width: 150,
-              height: 40,
-              color: Colors.green,
-            ),
-          ),
-          TimelineTile(
-            alignment: TimelineAlign.center,
-            lineXY: 0.5,
-            beforeLineStyle: const LineStyle(
-              color: Colors.green,
-              thickness: 6,
-            ),
-            afterLineStyle: const LineStyle(
-              color: Colors.green,
-              thickness: 6,
-            ),
-            indicatorStyle: IndicatorStyle(
+              indicatorXY: 0.01,
               width: 5,
-              color: Colors.green,
+              color: Colors.orange,
             ),
+            startChild: scholarshipList(value, true)));
+      } else {
+        children.add(TimelineDivider(
+          axis: TimelineAxis.horizontal,
+          begin: 0.01,
+          end: 0.5,
+          thickness: 6,
+          color: Colors.orange,
+        ));
+        children.add(TimelineTile(
+          alignment: TimelineAlign.center,
+          lineXY: 0.0001,
+          beforeLineStyle: const LineStyle(
+            color: Colors.orange,
+            thickness: 6,
           ),
-          TimelineTile(
+          afterLineStyle: const LineStyle(
+            color: Colors.orange,
+            thickness: 6,
+          ),
+          indicatorStyle: IndicatorStyle(
+            indicator: dateBox(date.toString(), false),
+            indicatorXY: 1,
+            width: 100,
+            height: 40,
+            color: Colors.orange,
+          ),
+        ));
+        children.add(TimelineTile(
             alignment: TimelineAlign.center,
-            lineXY: 0.1,
-            isLast: true,
+            lineXY: 0.001,
             beforeLineStyle: const LineStyle(
-              color: Colors.green,
+              color: Colors.orange,
               thickness: 6,
             ),
-            indicatorStyle: const IndicatorStyle(
-              width: 20,
-              color: Colors.green,
+            afterLineStyle: const LineStyle(
+              color: Colors.orange,
+              thickness: 6,
             ),
+            indicatorStyle: IndicatorStyle(
+              indicatorXY: 0.01,
+              width: 5,
+              color: Colors.orange,
+            ),
+            endChild: scholarshipList(value, false)));
+      }
+
+      if (i == (itemCount - 1)) {
+        if (checkEven(itemCount - 1)) {
+          children.add(TimelineDivider(
+            axis: TimelineAxis.horizontal,
+            begin: 0.01,
+            end: 0.5,
+            thickness: 6,
+            color: Colors.orange,
+          ));
+        } else {
+          children.add(TimelineDivider(
+            axis: TimelineAxis.horizontal,
+            begin: 0.5,
+            end: 0.99,
+            thickness: 6,
+            color: Colors.orange,
+          ));
+        }
+        children.add(TimelineTile(
+          alignment: TimelineAlign.center,
+          lineXY: 0.1,
+          isLast: true,
+          beforeLineStyle: const LineStyle(
+            color: Colors.orange,
+            thickness: 6,
           ),
-        ],
+          indicatorStyle: const IndicatorStyle(
+            width: 20,
+            color: Colors.orange,
+          ),
+        ));
+      }
+
+      i++;
+    });
+
+    listViews.add(Container(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: children,
       ),
     ));
-    // }
+  }
+
+  bool checkEven(num) {
+    if (num % 2 == 0) {
+      return true;
+    }
+    return false;
   }
 
   Future<bool> getData() async {
     await Future<dynamic>.delayed(const Duration(milliseconds: 50));
     return true;
+  }
+
+  Widget scholarshipList(List data, bool flag) {
+    final children = <Widget>[];
+    data.forEach((element) {
+      children.add(Container(
+          padding: EdgeInsets.all(5),
+          width: 200,
+          child: InkWell(
+              focusColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+              splashColor: PHTheme.nearlyDarkBlue,
+              onTap: () {
+                showCupertinoModalBottomSheet(
+                  expand: true,
+                  context: context,
+                  backgroundColor: Colors.white,
+                  builder: (context) => bottomModal(element),
+                );
+              },
+              child: Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: flag
+                        ? BorderRadius.only(
+                            topRight: Radius.circular(8.0),
+                            bottomLeft: Radius.circular(0.0),
+                            bottomRight: Radius.circular(20.0),
+                            topLeft: Radius.circular(20.0))
+                        : BorderRadius.only(
+                            topLeft: Radius.circular(8.0),
+                            bottomLeft: Radius.circular(20.0),
+                            bottomRight: Radius.circular(8.0),
+                            topRight: Radius.circular(20.0)),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                          color: HexColor("#FA7D82").withOpacity(0.6),
+                          offset: const Offset(1.1, 4.0),
+                          blurRadius: 8.0),
+                    ],
+                    gradient: LinearGradient(
+                      colors: <HexColor>[
+                        HexColor("#FFB295"),
+                        HexColor("#FA7D82"),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Expanded(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            element["title"],
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'popins',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      )),
+                    ],
+                  )))));
+    });
+    return Container(
+      padding: EdgeInsets.only(left: 20, top: 40),
+      alignment: Alignment.center,
+      child: Column(
+        children: children,
+      ),
+    );
+  }
+
+  _launchURL(url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Widget bottomModal(data) {
+    return Container(
+        decoration: BoxDecoration(color: PHTheme.nearlyBlack),
+        child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Stack(
+              children: [
+                ListView(
+                  children: [
+                    Text(
+                      "Scholarship Title",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data["title"],
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Description",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data["description"],
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Location",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data["location"],
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Application Submission Start Date",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data["startDate"],
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Application Submission Deadline",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data["endDate"],
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Scolarship for Program",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data["post"],
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Scholarship Issuer",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data["issuer"],
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          splashColor: Colors.white,
+                          onTap: () {
+                            _launchURL(data["link"]);
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: EdgeInsets.symmetric(vertical: 13),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: Text(
+                              'Go To the Original Page',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontFamily: "Poppins"),
+                            ),
+                          ),
+                        )),
+                  ],
+                ),
+                Visibility(
+                    visible: false,
+                    child: Container(
+                        alignment: Alignment.bottomRight,
+                        child: FloatingActionButton(
+                            elevation: 0,
+                            backgroundColor: Colors.transparent,
+                            child: Icon(Icons.arrow_downward_rounded,
+                                color: Colors.blue, size: 40),
+                            onPressed: () {})))
+              ],
+            )));
   }
 
   Widget dateBox(String date, bool flag) {
@@ -267,11 +603,11 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
                       bottom: BorderSide(width: 3, color: Colors.orange),
                       right: BorderSide(width: 4, color: Colors.orange),
                       left: BorderSide(width: 1, color: Colors.orange),
-                      top: BorderSide(width: 1, color: Colors.orange))
+                      top: BorderSide(width: 3, color: Colors.orange))
                   : Border(
                       bottom: BorderSide(width: 3, color: Colors.orange),
                       left: BorderSide(width: 4, color: Colors.orange),
-                      top: BorderSide(width: 1, color: Colors.orange),
+                      top: BorderSide(width: 3, color: Colors.orange),
                       right: BorderSide(width: 1, color: Colors.orange)),
             ),
             child: Text(
@@ -327,7 +663,7 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
             itemBuilder: (BuildContext context, int index) {
               widget.animationController.forward();
               return Container(
-                  padding: EdgeInsets.all(15.0), child: listViews[index]);
+                  padding: EdgeInsets.all(5.0), child: listViews[index]);
             },
           );
         }

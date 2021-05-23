@@ -11,6 +11,7 @@ class Vacancies {
     this.post = '',
     this.location = '',
     this.timestamp = '',
+    this.link = '',
   });
 
   String description;
@@ -22,6 +23,7 @@ class Vacancies {
   String id;
   String location;
   String timestamp;
+  String link;
 
   factory Vacancies.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data();
@@ -35,6 +37,7 @@ class Vacancies {
       startDate: data["StartDate"] ?? null,
       endDate: data["EndDate"] ?? null,
       timestamp: data["Timestamp"] ?? null,
+      link: data["Link"] ?? "",
     );
   }
 }

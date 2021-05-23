@@ -4,6 +4,8 @@ import 'package:PublicHealth/src/ph/ui_view/title_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:PublicHealth/src/ph/models/vacancies.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../ph_theme.dart';
 
@@ -64,10 +66,12 @@ class _VacancyScreenState extends State<VacancyScreen>
 
     videoRef.snapshots().listen((event) {
       if (event != null) {
-        setState(() {
-          data = event.docs.map((e) => Vacancies.fromFirestore(e)).toList();
-          listViews = <Widget>[];
-        });
+        if (this.mounted) {
+          setState(() {
+            data = event.docs.map((e) => Vacancies.fromFirestore(e)).toList();
+            listViews = <Widget>[];
+          });
+        }
         addAllListData(data);
       }
     }, onError: (e) {
@@ -133,53 +137,50 @@ class _VacancyScreenState extends State<VacancyScreen>
           animation: widget.animationController,
           builder: (BuildContext context, Widget child) {
             return FadeTransition(
-                opacity: animation,
-                child: Transform(
+              opacity: animation,
+              child: Transform(
                   transform: Matrix4.translationValues(
                       100 * (1.0 - animation.value), 0.0, 0.0),
                   child: Material(
                       color: Colors.transparent,
-                      child: InkWell(
-                        focusColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(8.0)),
-                        splashColor: PHTheme.nearlyDarkBlue,
-                        onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) => SearchData(
-                          //           animationController:
-                          //               widget.animationController,
-                          //           topicID: "test",
-                          //           title: "test")),
-                          // );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(8.0),
-                                bottomLeft: Radius.circular(30.0),
-                                bottomRight: Radius.circular(8.0),
-                                topRight: Radius.circular(30.0)),
-                            boxShadow: <BoxShadow>[
-                              BoxShadow(
-                                  color: HexColor("#FE95B6").withOpacity(0.6),
-                                  offset: const Offset(1.1, 4.0),
-                                  blurRadius: 8.0),
+                      child: Container(
+                        padding: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8.0),
+                              bottomLeft: Radius.circular(30.0),
+                              bottomRight: Radius.circular(8.0),
+                              topRight: Radius.circular(30.0)),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                                color: HexColor("#FE95B6").withOpacity(0.6),
+                                offset: const Offset(1.1, 4.0),
+                                blurRadius: 8.0),
+                          ],
+                          gradient: LinearGradient(
+                            colors: <HexColor>[
+                              HexColor("#43cea2"),
+                              HexColor("#185a9d"),
                             ],
-                            gradient: LinearGradient(
-                              colors: <HexColor>[
-                                HexColor("#43cea2"),
-                                HexColor("#185a9d"),
-                              ],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
                           ),
+                        ),
+                        child: InkWell(
+                          focusColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(8.0)),
+                          splashColor: PHTheme.nearlyDarkBlue,
+                          onTap: () {
+                            showCupertinoModalBottomSheet(
+                              expand: true,
+                              context: context,
+                              backgroundColor: Colors.white,
+                              builder: (context) => bottomModal(data[i]),
+                            );
+                          },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
@@ -191,7 +192,7 @@ class _VacancyScreenState extends State<VacancyScreen>
                                   Text(
                                     data[i].title,
                                     style: TextStyle(
-                                        color: Colors.white70,
+                                        color: Colors.white,
                                         fontSize: 25,
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -200,7 +201,7 @@ class _VacancyScreenState extends State<VacancyScreen>
                                     text: TextSpan(
                                         text: "Deadline: ",
                                         style: TextStyle(
-                                            color: Colors.white70,
+                                            color: HexColor("#1d046e"),
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold),
                                         children: [
@@ -217,7 +218,7 @@ class _VacancyScreenState extends State<VacancyScreen>
                                     text: TextSpan(
                                         text: "Vacancy Period: ",
                                         style: TextStyle(
-                                            color: Colors.white70,
+                                            color: HexColor("#1d046e"),
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold),
                                         children: [
@@ -232,15 +233,15 @@ class _VacancyScreenState extends State<VacancyScreen>
                                           ),
                                         ]),
                                   ),
-                                  Padding(
-                                      padding: EdgeInsets.only(left: 8),
-                                      child: Text(
-                                        data[i].description,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                        ),
-                                      )),
+                                  // Padding(
+                                  //     padding: EdgeInsets.only(left: 8),
+                                  //     child: Text(
+                                  //       data[i].description,
+                                  //       style: TextStyle(
+                                  //         color: Colors.black,
+                                  //         fontSize: 15,
+                                  //       ),
+                                  //     )),
                                 ],
                               )),
                               Row(
@@ -280,8 +281,8 @@ class _VacancyScreenState extends State<VacancyScreen>
                             ],
                           ),
                         ),
-                      )),
-                ));
+                      ))),
+            );
           },
         ),
       );
@@ -339,6 +340,211 @@ class _VacancyScreenState extends State<VacancyScreen>
         }
       },
     );
+  }
+
+  _launchURL(url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Widget bottomModal(data) {
+    return Container(
+        decoration: BoxDecoration(color: PHTheme.nearlyBlack),
+        child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Stack(
+              children: [
+                ListView(
+                  children: [
+                    Text(
+                      "Vacancy Title",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data.title,
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Description",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data.description,
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Location",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data.location,
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Vacancy Start Date",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data.startDate,
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Vacancy End Date",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data.endDate,
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Job Post",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data.post,
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      "Vacancy Issuer",
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: HexColor("#a2d923"),
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      data.issuer,
+                      style: TextStyle(
+                          decoration: TextDecoration.none,
+                          color: Colors.white70,
+                          fontFamily: PHTheme.fontName,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          splashColor: Colors.white,
+                          onTap: () {
+                            _launchURL(data.link);
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: EdgeInsets.symmetric(vertical: 13),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: Text(
+                              'Go To the Original Page',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontFamily: "Poppins"),
+                            ),
+                          ),
+                        )),
+                  ],
+                ),
+                Visibility(
+                    visible: false,
+                    child: Container(
+                        alignment: Alignment.bottomRight,
+                        child: FloatingActionButton(
+                            elevation: 0,
+                            backgroundColor: Colors.transparent,
+                            child: Icon(Icons.arrow_downward_rounded,
+                                color: Colors.blue, size: 40),
+                            onPressed: () {})))
+              ],
+            )));
   }
 
   Widget getAppBarUI() {
