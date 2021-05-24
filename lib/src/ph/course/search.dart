@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../main.dart';
 import '../ph_theme.dart';
@@ -36,6 +37,7 @@ class _SearchDataState extends State<SearchData> with TickerProviderStateMixin {
   TextEditingController editingController = TextEditingController();
   bool _show = true;
   ScrollController _scrollController = new ScrollController();
+  var storage = FirebaseStorage.instance;
 
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;

@@ -211,7 +211,7 @@ class AreaView extends StatelessWidget {
                         child: Image.asset(
                           imagepath,
                           height:
-                              0.19 * MediaQuery.of(context).size.height, //110
+                              0.11 * MediaQuery.of(context).size.height, //110
                           width: 0.19 * MediaQuery.of(context).size.width, //110
                         ),
                       ),
