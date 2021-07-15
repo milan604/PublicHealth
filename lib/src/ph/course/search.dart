@@ -1,6 +1,6 @@
-import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:PublicHealth/src/ph/models/materials.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,15 +13,20 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../../../main.dart';
 import '../ph_theme.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'dart:io';
+import 'package:PublicHealth/src/ph/course/viewmodel.dart';
+import 'package:provider_architecture/provider_architecture.dart';
+import 'package:PublicHealth/src/globals.dart' as globals;
 
 const debug = true;
+final userRef = FirebaseFirestore.instance.collection("users");
 
 class SearchData extends StatefulWidget {
-  SearchData({Key key, this.topicID, this.title, this.animationController})
+  SearchData(
+      {Key key, this.topicID, this.title, this.label, this.animationController})
       : super(key: key);
   final String topicID;
   final String title;
+  final String label;
   final AnimationController animationController;
 
   @override
@@ -35,16 +40,19 @@ class _SearchDataState extends State<SearchData> with TickerProviderStateMixin {
   List items = [];
   String errorMessage;
   TextEditingController editingController = TextEditingController();
-  bool _show = true;
-  ScrollController _scrollController = new ScrollController();
+  bool clicked = false;
   var storage = FirebaseStorage.instance;
+  bool downloading = false;
+  Map user = {};
+  List userMaterials = [];
 
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
   @override
   void initState() {
-    initDownloader();
+    readUserFirestore(globals.userID);
+    // initDownloader();
     getMaterials();
     topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
@@ -52,7 +60,6 @@ class _SearchDataState extends State<SearchData> with TickerProviderStateMixin {
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
     animationController = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
-    handleScroll();
     scrollController.addListener(() {
       if (scrollController.offset >= 24) {
         if (topBarOpacity != 1.0) {
@@ -78,16 +85,24 @@ class _SearchDataState extends State<SearchData> with TickerProviderStateMixin {
     super.initState();
   }
 
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
-    if (debug) {
-      print(
-          'Background Isolate Callback: task ($id) is in status ($status) and process ($progress)');
-    }
-    final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port');
-    send.send([id, status, progress]);
+  readUserFirestore(userId) async {
+    await userRef.doc(userId).get().then((value) => {
+          setState(() {
+            userMaterials = value.data()["materials"];
+          }),
+        });
   }
+
+  // static void downloadCallback(
+  //     String id, DownloadTaskStatus status, int progress) {
+  //   if (debug) {
+  //     print(
+  //         'Background Isolate Callback: task ($id) is in status ($status) and process ($progress)');
+  //   }
+  //   final SendPort send =
+  //       IsolateNameServer.lookupPortByName('downloader_send_port');
+  //   send.send([id, status, progress]);
+  // }
 
   void initDownloader() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -96,35 +111,10 @@ class _SearchDataState extends State<SearchData> with TickerProviderStateMixin {
         );
   }
 
-  void showFloationButton() {
-    setState(() {
-      _show = true;
-    });
-  }
-
-  void hideFloationButton() {
-    setState(() {
-      _show = false;
-    });
-  }
-
   void addItemsToTheList() {
     for (int count = 1; count <= 100; count++) {
       items.add("Book " + count.toString());
     }
-  }
-
-  void handleScroll() async {
-    _scrollController.addListener(() {
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        hideFloationButton();
-      }
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.forward) {
-        showFloationButton();
-      }
-    });
   }
 
   getMaterials() {
@@ -222,122 +212,130 @@ class _SearchDataState extends State<SearchData> with TickerProviderStateMixin {
 
   Widget getMainListViewUI() {
     return Container(
-      child: ListView.builder(
-        controller: scrollController,
-        padding: EdgeInsets.only(
-          top: AppBar().preferredSize.height +
-              MediaQuery.of(context).padding.top +
-              24,
-          bottom: 62 + MediaQuery.of(context).padding.bottom,
-        ),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final Animation<double> animation =
-              Tween<double>(begin: 0.0, end: 1.0).animate(
-            CurvedAnimation(
-              parent: animationController,
-              curve: Interval((1 / items.length) * index, 1.0,
-                  curve: Curves.fastOutSlowIn),
-            ),
-          );
-          animationController.forward();
-          return AnimatedBuilder(
-            animation: animationController,
-            builder: (BuildContext context, Widget child) {
-              return FadeTransition(
-                  opacity: animation,
-                  child: Transform(
-                    transform: Matrix4.translationValues(
-                        200 * (1.0 - animation.value), 0.0, 0.0),
-                    child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: InkWell(
-                            focusColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(8.0)),
-                            splashColor: PHTheme.nearlyDarkBlue,
-                            onTap: () {
-                              showCupertinoModalBottomSheet(
-                                expand: true,
-                                context: context,
-                                backgroundColor: Colors.white,
-                                builder: (context) => bottomModal(items[index]),
-                              );
-                            },
-                            child: Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(8.0),
-                                      bottomLeft: Radius.circular(0.0),
-                                      bottomRight: Radius.circular(8.0),
-                                      topRight: Radius.circular(30.0)),
-                                  boxShadow: <BoxShadow>[
-                                    BoxShadow(
-                                        color: HexColor(items[index].endColor)
-                                            .withOpacity(0.6),
-                                        offset: const Offset(1.1, 4.0),
-                                        blurRadius: 8.0),
-                                  ],
-                                  gradient: LinearGradient(
-                                    colors: <HexColor>[
-                                      HexColor(items[index].startColor),
-                                      HexColor(items[index].endColor),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    Expanded(
-                                        child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          '${items[index].title}',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontFamily: 'popins',
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w700),
+      child: items.length == 0
+          ? Text("No Data Found")
+          : ListView.builder(
+              controller: scrollController,
+              padding: EdgeInsets.only(
+                top: AppBar().preferredSize.height +
+                    MediaQuery.of(context).padding.top +
+                    24,
+                bottom: 62 + MediaQuery.of(context).padding.bottom,
+              ),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final Animation<double> animation =
+                    Tween<double>(begin: 0.0, end: 1.0).animate(
+                  CurvedAnimation(
+                    parent: animationController,
+                    curve: Interval((1 / items.length) * index, 1.0,
+                        curve: Curves.fastOutSlowIn),
+                  ),
+                );
+                animationController.forward();
+                return AnimatedBuilder(
+                  animation: animationController,
+                  builder: (BuildContext context, Widget child) {
+                    return FadeTransition(
+                        opacity: animation,
+                        child: Transform(
+                          transform: Matrix4.translationValues(
+                              200 * (1.0 - animation.value), 0.0, 0.0),
+                          child: Container(
+                              padding: EdgeInsets.all(5),
+                              child: InkWell(
+                                  focusColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(8.0)),
+                                  splashColor: PHTheme.nearlyDarkBlue,
+                                  onTap: () {
+                                    showCupertinoModalBottomSheet(
+                                      expand: true,
+                                      context: context,
+                                      backgroundColor: Colors.white,
+                                      builder: (context) =>
+                                          bottomModal(items[index]),
+                                    );
+                                  },
+                                  child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(8.0),
+                                            bottomLeft: Radius.circular(0.0),
+                                            bottomRight: Radius.circular(8.0),
+                                            topRight: Radius.circular(30.0)),
+                                        boxShadow: <BoxShadow>[
+                                          BoxShadow(
+                                              color: HexColor(
+                                                      items[index].endColor)
+                                                  .withOpacity(0.6),
+                                              offset: const Offset(1.1, 4.0),
+                                              blurRadius: 8.0),
+                                        ],
+                                        gradient: LinearGradient(
+                                          colors: <HexColor>[
+                                            HexColor(items[index].startColor),
+                                            HexColor(items[index].endColor),
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
                                         ),
-                                      ],
-                                    )),
-                                    // Row(
-                                    //   children: <Widget>[
-                                    //     items[index].author.toString().isNotEmpty
-                                    //         ? Icon(
-                                    //             Icons.person,
-                                    //             color: Colors.white,
-                                    //           )
-                                    //         : Icon(null),
-                                    //     Text(
-                                    //       '${items[index].author}',
-                                    //       style: TextStyle(
-                                    //           color: Colors.white,
-                                    //           fontFamily: 'popins',
-                                    //           fontSize: 20,
-                                    //           fontWeight: FontWeight.w700),
-                                    //     ),
-                                    //   ],
-                                    // )
-                                  ],
-                                )))),
-                  ));
-            },
-          );
-        },
-      ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: <Widget>[
+                                          Expanded(
+                                              child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(
+                                                '${items[index].title}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontFamily: 'popins',
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                            ],
+                                          )),
+                                        ],
+                                      )))),
+                        ));
+                  },
+                );
+              },
+            ),
     );
   }
 
+  updateUserFirestore(userId, materialID) async {
+    DocumentSnapshot doc = await userRef.doc(userId).get();
+    if (!doc.exists) {
+      print("User does not exist");
+      return;
+    }
+
+    userRef.doc(userId).update({
+      "materials": FieldValue.arrayUnion([materialID])
+    });
+    doc = await userRef.doc(userId).get();
+  }
+
   Widget bottomModal(data) {
+    readUserFirestore(globals.userID);
+    bool _show = true;
+    // bool _showButton = false;
+    if (userMaterials != null) {
+      if (userMaterials.contains(data.id)) {
+        _show = false;
+      }
+    }
     return Container(
         decoration: BoxDecoration(color: PHTheme.nearlyBlack),
         child: Padding(
@@ -409,48 +407,100 @@ class _SearchDataState extends State<SearchData> with TickerProviderStateMixin {
                     SizedBox(
                       height: 20.0,
                     ),
-                    Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          splashColor: Colors.white,
-                          onTap: () async {
-                            FlutterDownloader.registerCallback(
-                                downloadCallback);
-                            final status = await Permission.storage.request();
-                            if (status.isGranted) {
-                              final externalDirectory =
-                                  await getExternalStorageDirectory();
-                              FlutterDownloader.enqueue(
-                                  url:
-                                      "gs://public-health-7d949.appspot.com/unnamed (3).jpg",
-                                  savedDir: externalDirectory.path,
-                                  fileName: "test Download",
-                                  showNotification: true,
-                                  openFileFromNotification: true);
-                            } else {
-                              print("Permission Denied");
-                            }
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            padding: EdgeInsets.symmetric(vertical: 13),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5)),
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                            child: Text(
-                              'Download',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontFamily: "Poppins"),
-                            ),
+                    _show
+                        ? ViewModelProvider<MyViewModel>.withConsumer(
+                            viewModelBuilder: () => MyViewModel(),
+                            builder: (context, model, child) =>
+                                Column(children: <Widget>[
+                                  Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        splashColor: Colors.white,
+                                        onTap: () async {
+                                          final status = await Permission
+                                              .storage
+                                              .request();
+                                          if (status.isGranted) {
+                                            final externalDirectory =
+                                                await getExternalStorageDirectory();
+                                            if (model.downloadProgress <= 0) {
+                                              model.startDownloading(
+                                                  data.link,
+                                                  externalDirectory,
+                                                  data.uploadID);
+                                              // store information to User DB
+
+                                              updateUserFirestore(
+                                                  globals.userID, data.id);
+                                            } else {
+                                              print("Download in Progress");
+                                            }
+                                          } else {
+                                            print("Permission Denied");
+                                          }
+                                        },
+                                        child: Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 13),
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5)),
+                                            border: Border.all(
+                                                color: Colors.white, width: 2),
+                                          ),
+                                          child: model.downloadedProgress == 0
+                                              ? Text(
+                                                  'Download',
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      color: Colors.white,
+                                                      fontFamily: "Poppins"),
+                                                )
+                                              : model.downloadedProgress == 2
+                                                  ? Text(
+                                                      'Downloaded',
+                                                      style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontFamily:
+                                                              "Poppins"),
+                                                    )
+                                                  : Text(
+                                                      'Downloading...',
+                                                      style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontFamily:
+                                                              "Poppins"),
+                                                    ),
+                                        ),
+                                      )),
+                                  Padding(
+                                      padding: EdgeInsets.all(10.0),
+                                      child: SizedBox(
+                                          height: 10,
+                                          child: LinearProgressIndicator(
+                                            backgroundColor: Colors.transparent,
+                                            color: Colors.orange,
+                                            value: model.downloadProgress,
+                                          )))
+                                ]))
+                        : Text(
+                            "Content Already Downloaded",
+                            style: TextStyle(
+                                decoration: TextDecoration.none,
+                                color: Colors.white,
+                                fontFamily: PHTheme.fontName,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
                           ),
-                        )),
                     Text(
-                      "The Downloaded content will be added to your downloaded section list",
+                      "The Downloaded content will be added to your My" +
+                          capitalize(widget.label) +
+                          " section",
                       style: TextStyle(
                           decoration: TextDecoration.none,
                           color: HexColor("#a2d923"),

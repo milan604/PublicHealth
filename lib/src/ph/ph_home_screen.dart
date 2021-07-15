@@ -3,6 +3,7 @@ import 'package:PublicHealth/src/ph/course/course_screen.dart';
 import 'package:PublicHealth/src/ph/models/tabIcon_data.dart';
 import 'package:PublicHealth/src/ph/profile/profile_screen.dart';
 import 'package:PublicHealth/src/ph/vacancy/vacancy_screen.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:PublicHealth/src/services/authentication.dart';
 import 'bottom_navigation_view/bottom_bar_view.dart';
@@ -11,6 +12,8 @@ import 'package:PublicHealth/src/ph/home/home_screen.dart';
 import 'package:PublicHealth/src/ph/scholarship/scholarship_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:PublicHealth/src/ph/models/materials.dart';
+import 'package:PublicHealth/src/connectivity.dart';
+import 'package:PublicHealth/src/offline.dart';
 
 final userRef = FirebaseFirestore.instance.collection("users");
 
@@ -29,6 +32,8 @@ class PHomeScreen extends StatefulWidget {
 
 class _PHomeScreenState extends State<PHomeScreen>
     with TickerProviderStateMixin {
+  Map _source = {ConnectivityResult.none: false};
+  MyConnectivity _connectivity = MyConnectivity.instance;
   AnimationController animationController;
   Materials videoDta;
   String errorMessage;
@@ -50,37 +55,54 @@ class _PHomeScreenState extends State<PHomeScreen>
         duration: const Duration(milliseconds: 600), vsync: this);
     tabBody =
         HomeScreen(animationController: animationController, user: widget.user);
+    _connectivity.initialise();
+    _connectivity.myStream.listen((source) {
+      setState(() => _source = source);
+    });
   }
 
-  // @override
-  // void dispose() {
-  //   animationController.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    _connectivity.disposeStream();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: PHTheme.background,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: FutureBuilder<bool>(
-          future: getData(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (!snapshot.hasData) {
-              return const SizedBox();
-            } else {
-              return Stack(
-                children: <Widget>[
-                  tabBody,
-                  bottomBar(),
-                ],
-              );
-            }
-          },
-        ),
-      ),
-    );
+    String netStatus = '';
+    switch (_source.keys.toList()[0]) {
+      case ConnectivityResult.none:
+        netStatus = "Offline";
+        break;
+      case ConnectivityResult.mobile:
+        netStatus = "Mobile";
+        break;
+      case ConnectivityResult.wifi:
+        netStatus = "WiFi";
+    }
+    return netStatus == "Offline"
+        ? OfflineView()
+        : Container(
+            color: PHTheme.background,
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: FutureBuilder<bool>(
+                future: getData(),
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  if (!snapshot.hasData) {
+                    return const SizedBox();
+                  } else {
+                    return Stack(
+                      children: <Widget>[
+                        tabBody,
+                        bottomBar(),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ),
+          );
   }
 
   Future<bool> getData() async {

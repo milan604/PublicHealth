@@ -122,7 +122,6 @@ class _CourseScreenState extends State<CourseScreen>
           videoDta =
               event.docs.map((e) => Materials.fromFirestore(e)).toList().first;
         });
-
         addAllListData();
       }
     }, onError: (e) {

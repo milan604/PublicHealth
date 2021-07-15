@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:PublicHealth/src/ph/models/scholarships.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:intl/intl.dart';
-import "package:collection/collection.dart";
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -66,7 +65,7 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
   getScholarship() {
     Query scholarRef = FirebaseFirestore.instance
         .collection("scholarship")
-        .orderBy("startDate");
+        .orderBy("StartDateTime");
 
     scholarRef.snapshots().listen((event) {
       if (event != null) {
@@ -86,10 +85,9 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
     });
   }
 
-  String extractDate(Timestamp time) {
-    var datetime = DateTime.fromMillisecondsSinceEpoch(time.seconds * 1000);
-    var format = DateFormat.yMd();
-    var date = format.format(datetime);
+  String extractDate(DateTime time) {
+    var format = DateFormat.yMMMEd();
+    var date = format.format(time);
     return date;
   }
 
@@ -112,24 +110,43 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
 
     var groupedData = {};
     data.forEach((element) {
-      var date = extractDate(element.startDate);
+      var date = extractDate(DateTime.parse(element.startDate));
+      var newStartDate = DateTime.parse(element.startDate);
+      var endDate = DateTime.parse(element.endDate);
+      var currentDate = new DateTime.now().subtract(Duration(days: 1));
+      var current = new DateTime.now();
+      var newEndDate = element.endDate;
+      if (element.recurring) {
+        date = current.year.toString() +
+            "-" +
+            newStartDate.month.toString() +
+            "-" +
+            newStartDate.day.toString();
+        newEndDate = current.year.toString() +
+            "-" +
+            endDate.month.toString() +
+            "-" +
+            endDate.day.toString();
+      }
       var payload = {
         "description": element.description,
         "title": element.title,
         "startDate": date,
-        "endDate": element.endDate,
+        "endDate": newEndDate,
         "issuer": element.issuer,
         "post": element.post,
         "location": element.location,
         "link": element.link,
       };
 
-      if (groupedData[date] == null) {
-        groupedData[date] = [payload];
-      } else {
-        var arr = groupedData[date];
-        arr.add(payload);
-        groupedData[date] = arr;
+      if (endDate.isAfter(currentDate)) {
+        if (groupedData[date] == null) {
+          groupedData[date] = [payload];
+        } else {
+          var arr = groupedData[date];
+          arr.add(payload);
+          groupedData[date] = arr;
+        }
       }
     });
 
@@ -177,7 +194,7 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
           indicatorStyle: IndicatorStyle(
             indicator: dateBox(date.toString(), true),
             indicatorXY: 1,
-            width: 100,
+            width: 120,
             height: 40,
             color: Colors.orange,
           ),
@@ -221,7 +238,7 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
           indicatorStyle: IndicatorStyle(
             indicator: dateBox(date.toString(), false),
             indicatorXY: 1,
-            width: 100,
+            width: 120,
             height: 40,
             color: Colors.orange,
           ),
@@ -613,8 +630,8 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
             child: Text(
               date,
               style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.purple,
+                  fontSize: 13,
+                  color: HexColor("#1313af"),
                   fontFamily: "Poppins",
                   fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,

@@ -167,7 +167,7 @@ class _VideoLessionViewState extends State<VideoLessionView> {
                                     Icons.arrow_right,
                                     color: HexColor("#6F56E8"),
                                     size: 44,
-                                  ),     
+                                  ),
                                   onTap: () {
                                     //Dialog Start here
                                     showDialog(

@@ -4,7 +4,8 @@ class Scholarships {
   Scholarships({
     this.id = '',
     this.title = '',
-    this.startDate,
+    this.startDate = '',
+    this.startDateTime,
     this.endDate = '',
     this.description = '',
     this.issuer = '',
@@ -12,11 +13,13 @@ class Scholarships {
     this.location = '',
     this.timestamp = '',
     this.link = '',
+    this.recurring = false,
   });
 
   String description;
   String title;
-  Timestamp startDate;
+  String startDate;
+  Timestamp startDateTime;
   String endDate;
   String issuer;
   String post;
@@ -24,6 +27,7 @@ class Scholarships {
   String location;
   String timestamp;
   String link;
+  bool recurring;
 
   factory Scholarships.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data();
@@ -34,9 +38,11 @@ class Scholarships {
       issuer: data["Issuer"] ?? null,
       post: data["Post"] ?? null,
       location: data["Location"] ?? "",
-      startDate: data["startDate"] ?? null,
-      endDate: data["endDate"] ?? null,
+      startDate: data["StartDate"] ?? null,
+      startDateTime: data["StartDateTime"] ?? null,
+      endDate: data["EndDate"] ?? null,
       link: data["Link"] ?? "",
+      recurring: data["Recurring"] ?? false,
     );
   }
 }

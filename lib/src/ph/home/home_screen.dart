@@ -94,16 +94,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
 
-    listViews.add(
-      RCourseListView(
-        mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
-            CurvedAnimation(
-                parent: widget.animationController,
-                curve: Interval((1 / count) * 3, 1.0,
-                    curve: Curves.fastOutSlowIn))),
-        mainScreenAnimationController: widget.animationController,
-      ),
-    );
+    listViews.add(Padding(
+        padding: EdgeInsets.only(left: 30),
+        child: Text(
+          'Coming Soon ...',
+          textAlign: TextAlign.left,
+          style: TextStyle(
+            fontFamily: PHTheme.fontName,
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+            letterSpacing: 1.2,
+            color: PHTheme.nearlyBlue,
+          ),
+        )));
+
+    // listViews.add(
+    //   RCourseListView(
+    //     mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
+    //         CurvedAnimation(
+    //             parent: widget.animationController,
+    //             curve: Interval((1 / count) * 3, 1.0,
+    //                 curve: Curves.fastOutSlowIn))),
+    //     mainScreenAnimationController: widget.animationController,
+    //   ),
+    // );
 
     listViews.add(
       TitleView(
@@ -118,15 +132,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
 
-    listViews.add(
-      NewsSection(
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 5, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
-      ),
-    );
+    listViews.add(Padding(
+        padding: EdgeInsets.only(left: 30),
+        child: Text(
+          'Coming Soon ...',
+          textAlign: TextAlign.left,
+          style: TextStyle(
+            fontFamily: PHTheme.fontName,
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+            letterSpacing: 1.2,
+            color: PHTheme.nearlyBlue,
+          ),
+        )));
+
+    // listViews.add(
+    //   NewsSection(
+    //     animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+    //         parent: widget.animationController,
+    //         curve:
+    //             Interval((1 / count) * 5, 1.0, curve: Curves.fastOutSlowIn))),
+    //     animationController: widget.animationController,
+    //   ),
+    // );
 
     listViews.add(
       TitleView(

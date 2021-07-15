@@ -6,6 +6,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:PublicHealth/src/ph/ph_home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:PublicHealth/src/services/tokenGen.dart';
+import 'package:PublicHealth/src/globals.dart' as globals;
+import 'package:connectivity/connectivity.dart';
+import 'package:PublicHealth/src/connectivity.dart';
+import 'package:PublicHealth/src/offline.dart';
+import 'package:ots/ots.dart';
 
 final userRef = FirebaseFirestore.instance.collection("users");
 final userTokenRef = FirebaseFirestore.instance.collection("user_tokens");
@@ -20,7 +25,36 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  Map _source = {ConnectivityResult.none: false};
+  MyConnectivity _connectivity = MyConnectivity.instance;
   User user;
+  String netStatus = '';
+
+  @override
+  void initState() {
+    _connectivity.initialise();
+    _connectivity.myStream.listen((source) {
+      setState(() => _source = source);
+    });
+
+    switch (_source.keys.toList()[0]) {
+      case ConnectivityResult.none:
+        netStatus = "Offline";
+        break;
+      case ConnectivityResult.mobile:
+        netStatus = "Mobile";
+        break;
+      case ConnectivityResult.wifi:
+        netStatus = "WiFi";
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _connectivity.disposeStream();
+    super.dispose();
+  }
 
   Widget buildWaitingScreen() {
     return Scaffold(
@@ -40,6 +74,7 @@ class _LoginPageState extends State<LoginPage> {
             widget.auth.signInGoogle().then((user) => {
                   createUserFirestore(user.uid, user.displayName, user.email),
                   createUserToken(user.uid),
+                  globals.userID = user.uid,
                   Navigator.push(
                       context,
                       CupertinoPageRoute(
@@ -75,6 +110,7 @@ class _LoginPageState extends State<LoginPage> {
             widget.auth.facebookLogin().then((user) => {
                   createUserFirestore(user.uid, user.displayName, user.email),
                   createUserToken(user.uid),
+                  globals.userID = user.uid,
                   Navigator.push(
                       context,
                       CupertinoPageRoute(
@@ -207,14 +243,27 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        if (orientation == Orientation.portrait) {
-          return _rootPage(MediaQuery.of(context).size.height);
-        } else {
-          return _rootPage(null);
-        }
-      },
-    );
+    String netStatus = '';
+    switch (_source.keys.toList()[0]) {
+      case ConnectivityResult.none:
+        netStatus = "Offline";
+        break;
+      case ConnectivityResult.mobile:
+        netStatus = "Mobile";
+        break;
+      case ConnectivityResult.wifi:
+        netStatus = "WiFi";
+    }
+    return netStatus == "Offline"
+        ? OfflineView()
+        : OrientationBuilder(
+            builder: (context, orientation) {
+              if (orientation == Orientation.portrait) {
+                return _rootPage(MediaQuery.of(context).size.height);
+              } else {
+                return _rootPage(null);
+              }
+            },
+          );
   }
 }

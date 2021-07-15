@@ -192,7 +192,7 @@ class _DownloadCourseScreenState extends State<DownloadCourseScreen>
       TitleView(
         titleTxt: 'Available ' +
             capitalize(widget.label) +
-            " to Download" +
+            " Category" +
             ' (' +
             itemCount.toString() +
             ')',
@@ -239,7 +239,8 @@ class _DownloadCourseScreenState extends State<DownloadCourseScreen>
                                 builder: (context) => SearchData(
                                     animationController: animationController,
                                     topicID: data[i].id,
-                                    title: data[i].title)),
+                                    title: data[i].title,
+                                    label: widget.label)),
                           );
                         },
                         child: Container(
@@ -292,17 +293,17 @@ class _DownloadCourseScreenState extends State<DownloadCourseScreen>
                                       )),
                                 ],
                               )),
-                              Row(
-                                children: <Widget>[
-                                  Text(
-                                    data[i].rating.toString(),
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              )
+                              // Row(
+                              //   children: <Widget>[
+                              //     Text(
+                              //       data[i].rating.toString(),
+                              //       style: TextStyle(
+                              //           color: Colors.white,
+                              //           fontSize: 20,
+                              //           fontWeight: FontWeight.bold),
+                              //     ),
+                              //   ],
+                              // )
                             ],
                           ),
                         ),
