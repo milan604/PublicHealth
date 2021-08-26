@@ -213,7 +213,19 @@ class _SearchDataState extends State<SearchData> with TickerProviderStateMixin {
   Widget getMainListViewUI() {
     return Container(
       child: items.length == 0
-          ? Text("No Data Found")
+          ? Padding(
+              padding: EdgeInsets.only(left: 150, top: 150),
+              child: Text(
+                'No Data Found',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: PHTheme.fontName,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  letterSpacing: 1.2,
+                  color: Colors.red,
+                ),
+              ))
           : ListView.builder(
               controller: scrollController,
               padding: EdgeInsets.only(
