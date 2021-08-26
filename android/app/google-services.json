@@ -8,18 +8,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:786945435262:android:35fd9987a76ae017905a2f",
+        "mobilesdk_app_id": "1:786945435262:android:35ad393b690d2e93905a2f",
         "android_client_info": {
-          "package_name": "com.mlan.PublicHealth"
+          "package_name": "com.mlano.PublicHealth"
         }
       },
       "oauth_client": [
         {
-          "client_id": "786945435262-bdd1vmqgj5ohttfqe3ve4qc4dgqcgqtg.apps.googleusercontent.com",
+          "client_id": "786945435262-fd1vacodbh0ougg8lnmrtcdp5vf9clsr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mlan.PublicHealth",
-            "certificate_hash": "4eb07628057d556255f6b36b6345708ac45c275d"
+            "package_name": "com.mlano.PublicHealth",
+            "certificate_hash": "7eaa96eac0cc251998e4069b313096258761c0e9"
           }
         },
         {

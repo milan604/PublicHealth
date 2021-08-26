@@ -80,29 +80,27 @@ class _PHomeScreenState extends State<PHomeScreen>
       case ConnectivityResult.wifi:
         netStatus = "WiFi";
     }
-    return netStatus == "Offline"
-        ? OfflineView()
-        : Container(
-            color: PHTheme.background,
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              body: FutureBuilder<bool>(
-                future: getData(),
-                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                  if (!snapshot.hasData) {
-                    return const SizedBox();
-                  } else {
-                    return Stack(
-                      children: <Widget>[
-                        tabBody,
-                        bottomBar(),
-                      ],
-                    );
-                  }
-                },
-              ),
-            ),
-          );
+    return Container(
+      color: PHTheme.background,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: FutureBuilder<bool>(
+          future: getData(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (!snapshot.hasData) {
+              return const SizedBox();
+            } else {
+              return Stack(
+                children: <Widget>[
+                  tabBody,
+                  bottomBar(),
+                ],
+              );
+            }
+          },
+        ),
+      ),
+    );
   }
 
   Future<bool> getData() async {

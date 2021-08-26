@@ -1,9 +1,7 @@
 import 'dart:ui';
 import 'package:PublicHealth/src/ph/news/news_list_view.dart';
 import 'package:PublicHealth/src/ph/models/news.dart';
-import 'package:PublicHealth/src/ph/ph_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:PublicHealth/src/ph/news/news_theme.dart';
 
 class NewsScreen extends StatefulWidget {

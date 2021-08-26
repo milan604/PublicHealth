@@ -1,4 +1,4 @@
-package com.mlan.PublicHealth
+package com.mlano.PublicHealth
 
 import io.flutter.embedding.android.FlutterActivity
 

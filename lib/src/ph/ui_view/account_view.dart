@@ -102,7 +102,7 @@ class AccountView extends StatelessWidget {
                                       right: 16,
                                     ),
                                     child: Text(
-                                      "Welcome to Loksewa Nepal",
+                                      "Welcome to PublicHealth App",
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                         fontFamily: PHTheme.fontName,

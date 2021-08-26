@@ -92,6 +92,17 @@ class SettingsView extends StatelessWidget {
                                       ),
                                     ),
                                   ),
+                                  // Column(children: <Widget>[
+                                  //   Padding(
+                                  //     padding: const EdgeInsets.only(
+                                  //       left: 115,
+                                  //       right: 16,
+                                  //       top: 10,
+                                  //       bottom: 15,
+                                  //     ),
+                                  //     child: _toggleBiometric(),
+                                  //   ),
+                                  // ]),
                                   Column(children: <Widget>[
                                     Padding(
                                       padding: const EdgeInsets.only(
@@ -100,7 +111,17 @@ class SettingsView extends StatelessWidget {
                                         top: 10,
                                         bottom: 15,
                                       ),
-                                      child: _toggleBiometric(),
+                                      child: Text(
+                                        'Coming Soon ...',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontFamily: PHTheme.fontName,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15,
+                                          letterSpacing: 1.2,
+                                          color: PHTheme.nearlyBlue,
+                                        ),
+                                      ),
                                     ),
                                   ]),
                                 ],
