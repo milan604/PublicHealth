@@ -111,17 +111,8 @@ class SettingsView extends StatelessWidget {
                                         top: 10,
                                         bottom: 15,
                                       ),
-                                      child: Text(
-                                        'Coming Soon ...',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontFamily: PHTheme.fontName,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 15,
-                                          letterSpacing: 1.2,
-                                          color: PHTheme.nearlyBlue,
-                                        ),
-                                      ),
+                                      child: Image.asset(
+                                          "assets/images/ph/comingsoon.png"),
                                     ),
                                   ]),
                                 ],

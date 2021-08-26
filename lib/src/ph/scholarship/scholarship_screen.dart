@@ -774,7 +774,7 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
                                   //   ),
                                   // ),
                                   Text(
-                                    'Job Vacancies',
+                                    'Timeline',
                                     textAlign: TextAlign.left,
                                     style: TextStyle(
                                       fontFamily: PHTheme.fontName,

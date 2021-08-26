@@ -96,17 +96,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     listViews.add(Padding(
         padding: EdgeInsets.only(left: 30),
-        child: Text(
-          'Coming Soon ...',
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            fontFamily: PHTheme.fontName,
-            fontWeight: FontWeight.w700,
-            fontSize: 15,
-            letterSpacing: 1.2,
-            color: PHTheme.nearlyBlue,
-          ),
-        )));
+        child: Image.asset("assets/images/ph/comingsoon.png")));
 
     // listViews.add(
     //   RCourseListView(
@@ -134,17 +124,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     listViews.add(Padding(
         padding: EdgeInsets.only(left: 30),
-        child: Text(
-          'Coming Soon ...',
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            fontFamily: PHTheme.fontName,
-            fontWeight: FontWeight.w700,
-            fontSize: 15,
-            letterSpacing: 1.2,
-            color: PHTheme.nearlyBlue,
-          ),
-        )));
+        child: Image.asset("assets/images/ph/comingsoon.png")));
 
     // listViews.add(
     //   NewsSection(
