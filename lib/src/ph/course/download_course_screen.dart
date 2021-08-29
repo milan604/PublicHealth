@@ -187,7 +187,7 @@ class _DownloadCourseScreenState extends State<DownloadCourseScreen>
   void addAllListData(List data) {
     const int count = 5;
     int itemCount = data.length;
-
+    mylistViews.clear();
     mylistViews.add(
       TitleView(
         titleTxt: 'Available ' +

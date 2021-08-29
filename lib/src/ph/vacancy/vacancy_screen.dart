@@ -107,6 +107,7 @@ class _VacancyScreenState extends State<VacancyScreen>
         c++;
       }
     }
+    listViews.clear();
     listViews.add(
       TitleView(
         titleTxt: 'All available vacancies ' + '(' + c.toString() + ')',

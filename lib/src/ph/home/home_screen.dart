@@ -1,10 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:PublicHealth/src/ph/ui_view/home_list_view.dart';
-import 'package:PublicHealth/src/ph/ui_view/news_section.dart';
 import 'package:PublicHealth/src/ph/ui_view/glass_view.dart';
 import 'package:PublicHealth/src/ph/ui_view/title_view.dart';
 import 'package:PublicHealth/src/ph/ph_theme.dart';
-import 'package:PublicHealth/src/ph/home/recommended_list_view.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -60,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void addAllListData() {
     const int count = 9;
-
+    listViews.clear();
     // listViews.add(
     //   TitleView(
     //     titleTxt: 'Mediterranean diet',

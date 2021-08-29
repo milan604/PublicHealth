@@ -93,6 +93,7 @@ class _ScholarshipScreenState extends State<ScholarshipScreen>
 
   void addAllListData(List data) {
     const int count = 5;
+    listViews.clear();
     listViews.add(
       TitleView(
         titleTxt: 'Scholarship Timeline ' +

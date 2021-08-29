@@ -100,6 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   void addAllListData() {
     const int count = 5;
+    listViews.clear();
     listViews.add(
       ProfileTitleView(
         titleTxt: 'Account',

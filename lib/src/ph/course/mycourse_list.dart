@@ -7,11 +7,9 @@ import 'package:PublicHealth/src/ph/models/articles.dart';
 import 'package:PublicHealth/src/globals.dart' as globals;
 import 'package:PublicHealth/src/ph/models/materials.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdftron_flutter/pdftron_flutter.dart';
 import 'package:badges/badges.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
-import 'package:PublicHealth/src/ph/course/course_list.dart';
 
 import '../ph_theme.dart';
 
@@ -239,8 +237,8 @@ class _MyCourseScreenState extends State<MyCourseScreen>
                                   const BorderRadius.all(Radius.circular(8.0)),
                               splashColor: PHTheme.nearlyDarkBlue,
                               onTap: () async {
-                                final externalDirectory =
-                                    await getExternalStorageDirectory();
+                                // final externalDirectory =
+                                //     await getExternalStorageDirectory();
                                 // var filePath =
                                 //     externalDirectory.path + "/" + data[i].uploadID;
                                 var disabledElements = [

@@ -59,7 +59,7 @@ class _CourseScreenState extends State<CourseScreen>
 
   void addAllListData() {
     const int count = 5;
-
+    listViews.clear();
     listViews.add(
       TitleView(
         titleTxt: 'Video Lesson',

@@ -19,8 +19,3 @@ generateToken(String userID) {
 
   return stringToken;
 }
-
-// readSecretFirestore() async {
-//   String key;
-//   DocumentSnapshot doc = await secretRef.doc("uWCLWecRXYAnzZr9TltL").get();
-// }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../ph_theme.dart';
-import 'package:lite_rolling_switch/lite_rolling_switch.dart';
-import 'package:PublicHealth/src/ph/models/globals.dart' as globals;
 
 class SettingsView extends StatelessWidget {
   final AnimationController animationController;
@@ -26,7 +24,7 @@ class SettingsView extends StatelessWidget {
                   padding: const EdgeInsets.only(
                       left: 24, right: 24, top: 0, bottom: 0),
                   child: Stack(
-                    overflow: Overflow.visible,
+                    clipBehavior: Clip.none,
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(top: 16, bottom: 16),
@@ -141,20 +139,20 @@ class SettingsView extends StatelessWidget {
     );
   }
 
-  Widget _toggleBiometric() {
-    return LiteRollingSwitch(
-      //initial value
-      value: globals.bioFlag,
-      textOn: 'ON',
-      textOff: 'OFF',
-      colorOn: Colors.greenAccent[700],
-      colorOff: Colors.redAccent[700],
-      iconOn: Icons.done,
-      iconOff: Icons.remove_circle_outline,
-      textSize: 15.0,
-      onChanged: (bool state) {
-        globals.bioFlag = state;
-      },
-    );
-  }
+  // Widget _toggleBiometric() {
+  //   return LiteRollingSwitch(
+  //     //initial value
+  //     value: globals.bioFlag,
+  //     textOn: 'ON',
+  //     textOff: 'OFF',
+  //     colorOn: Colors.greenAccent[700],
+  //     colorOff: Colors.redAccent[700],
+  //     iconOn: Icons.done,
+  //     iconOff: Icons.remove_circle_outline,
+  //     textSize: 15.0,
+  //     onChanged: (bool state) {
+  //       globals.bioFlag = state;
+  //     },
+  //   );
+  // }
 }

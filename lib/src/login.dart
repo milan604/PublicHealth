@@ -9,7 +9,7 @@ import 'package:PublicHealth/src/services/tokenGen.dart';
 import 'package:PublicHealth/src/globals.dart' as globals;
 import 'package:connectivity/connectivity.dart';
 import 'package:PublicHealth/src/connectivity.dart';
-import 'package:PublicHealth/src/offline.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 final userRef = FirebaseFirestore.instance.collection("users");
 final userTokenRef = FirebaseFirestore.instance.collection("user_tokens");
@@ -253,17 +253,11 @@ class _LoginPageState extends State<LoginPage> {
       case ConnectivityResult.wifi:
         netStatus = "WiFi";
     }
-    // return netStatus == "Offline"
-    //     ? OfflineView()
-    //     : OrientationBuilder(
-    //         builder: (context, orientation) {
-    //           if (orientation == Orientation.portrait) {
-    //             return _rootPage(MediaQuery.of(context).size.height);
-    //           } else {
-    //             return _rootPage(null);
-    //           }
-    //         },
-    //       );
+    if (netStatus == "Offline") {
+      context.loaderOverlay.show();
+    } else {
+      context.loaderOverlay.hide();
+    }
     return OrientationBuilder(
       builder: (context, orientation) {
         if (orientation == Orientation.portrait) {
