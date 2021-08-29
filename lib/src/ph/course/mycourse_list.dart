@@ -9,6 +9,9 @@ import 'package:PublicHealth/src/ph/models/materials.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdftron_flutter/pdftron_flutter.dart';
+import 'package:badges/badges.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
+import 'package:PublicHealth/src/ph/course/course_list.dart';
 
 import '../ph_theme.dart';
 
@@ -154,7 +157,7 @@ class _MyCourseScreenState extends State<MyCourseScreen>
   void addAllListData(List data) {
     const int count = 5;
     int itemCount = data.length;
-
+    myDownloadedListViews.clear();
     myDownloadedListViews.add(
       TitleView(
         titleTxt: capitalize(widget.label) +
@@ -188,99 +191,139 @@ class _MyCourseScreenState extends State<MyCourseScreen>
               return FadeTransition(
                   opacity: animation,
                   child: Transform(
-                    transform: Matrix4.translationValues(
-                        100 * (1.0 - animation.value), 0.0, 0.0),
-                    child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          focusColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          hoverColor: Colors.transparent,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(8.0)),
-                          splashColor: PHTheme.nearlyDarkBlue,
-                          onTap: () async {
-                            final externalDirectory =
-                                await getExternalStorageDirectory();
-                            // var filePath =
-                            //     externalDirectory.path + "/" + data[i].uploadID;
-                            var disabledElements = [
-                              Buttons.shareButton,
-                              Buttons.saveCopyButton,
-                              Buttons.printButton,
-                              Buttons.editPagesButton
-                            ];
-
-                            var config = Config();
-                            config.disabledElements = disabledElements;
-                            PdftronFlutter.openDocument(data[i].link,
-                                config: config);
+                      transform: Matrix4.translationValues(
+                          100 * (1.0 - animation.value), 0.0, 0.0),
+                      child: Badge(
+                        badgeColor: Colors.red,
+                        badgeContent: InkWell(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (_) => AssetGiffyDialog(
+                                      image: Image.asset(
+                                          'assets/images/ph/confirm.gif'),
+                                      title: Text(
+                                        "Are you sure, you want to delete this item ?",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 22.0,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      description: Text(
+                                        "If Deleted You have to Again Go to Download " +
+                                            capitalize(widget.label) +
+                                            " section to download it",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(),
+                                      ),
+                                      entryAnimation: EntryAnimation.TOP_RIGHT,
+                                      onOkButtonPressed: () {
+                                        // Delete Book from users material section
+                                        updateUserFirestore(globals.userID,
+                                            data[i].id, context);
+                                      },
+                                    ));
                           },
-                          child: Container(
-                            padding: EdgeInsets.all(10.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(8.0),
-                                  bottomLeft: Radius.circular(30.0),
-                                  bottomRight: Radius.circular(8.0),
-                                  topRight: Radius.circular(30.0)),
-                              boxShadow: <BoxShadow>[
-                                BoxShadow(
-                                    color: HexColor("#FFB295").withOpacity(0.6),
-                                    offset: const Offset(1.1, 4.0),
-                                    blurRadius: 8.0),
-                              ],
-                              gradient: LinearGradient(
-                                colors: <HexColor>[
-                                  HexColor("#FA7D82"),
-                                  HexColor("#FFB295"),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Expanded(
-                                    child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      data[i].title,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Padding(
-                                        padding: EdgeInsets.only(left: 8),
-                                        child: Text(
-                                          data[i].description,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15,
-                                          ),
-                                        )),
-                                  ],
-                                )),
-                                // Row(
-                                //   children: <Widget>[
-                                //     Text(
-                                //       data[i].rating.toString(),
-                                //       style: TextStyle(
-                                //           color: Colors.white,
-                                //           fontSize: 20,
-                                //           fontWeight: FontWeight.bold),
-                                //     ),
-                                //   ],
-                                // )
-                              ],
-                            ),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
                           ),
-                        )),
-                  ));
+                        ),
+                        child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              focusColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(8.0)),
+                              splashColor: PHTheme.nearlyDarkBlue,
+                              onTap: () async {
+                                final externalDirectory =
+                                    await getExternalStorageDirectory();
+                                // var filePath =
+                                //     externalDirectory.path + "/" + data[i].uploadID;
+                                var disabledElements = [
+                                  Buttons.shareButton,
+                                  Buttons.saveCopyButton,
+                                  Buttons.printButton,
+                                  Buttons.editPagesButton
+                                ];
+
+                                var config = Config();
+                                config.disabledElements = disabledElements;
+                                PdftronFlutter.openDocument(data[i].link,
+                                    config: config);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(10.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8.0),
+                                      bottomLeft: Radius.circular(30.0),
+                                      bottomRight: Radius.circular(8.0),
+                                      topRight: Radius.circular(30.0)),
+                                  boxShadow: <BoxShadow>[
+                                    BoxShadow(
+                                        color: HexColor("#FFB295")
+                                            .withOpacity(0.6),
+                                        offset: const Offset(1.1, 4.0),
+                                        blurRadius: 8.0),
+                                  ],
+                                  gradient: LinearGradient(
+                                    colors: <HexColor>[
+                                      HexColor("#FA7D82"),
+                                      HexColor("#FFB295"),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Expanded(
+                                        child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          data[i].title,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Padding(
+                                            padding: EdgeInsets.only(left: 8),
+                                            child: Text(
+                                              data[i].description,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15,
+                                              ),
+                                            )),
+                                      ],
+                                    )),
+                                    // Row(
+                                    //   children: <Widget>[
+                                    //     Text(
+                                    //       data[i].rating.toString(),
+                                    //       style: TextStyle(
+                                    //           color: Colors.white,
+                                    //           fontSize: 20,
+                                    //           fontWeight: FontWeight.bold),
+                                    //     ),
+                                    //   ],
+                                    // )
+                                  ],
+                                ),
+                              ),
+                            )),
+                      )));
             },
           ),
         );
@@ -353,6 +396,18 @@ class _MyCourseScreenState extends State<MyCourseScreen>
         }
       },
     );
+  }
+
+  updateUserFirestore(String userId, String contentID, ctx) async {
+    DocumentSnapshot doc = await userRef.doc(userId).get();
+    if (doc.exists) {
+      materials = doc.data()["materials"];
+      materials.removeWhere((element) => element == contentID);
+      userRef.doc(userId).update({"materials": materials});
+      doc = await userRef.doc(userId).get();
+      readUserFirestore(userId);
+      Navigator.pop(ctx);
+    }
   }
 
   Widget getAppBarUI() {

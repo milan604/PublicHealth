@@ -48,7 +48,7 @@ dependencies:
   flutter_downloader: ^1.6.0
   path_provider: ^2.0.1
   permission_handler: ^5.1.0+2
-  url_launcher: ^6.0.4
+  url_launcher: ^6.0.5
   collection: ^1.15.0
   firebase_storage: ^7.0.0
   provider_architecture: ^1.1.1+1
@@ -56,6 +56,8 @@ dependencies:
   shared_preferences: ^2.0.6
   connectivity: ^3.0.6
   ots: ^0.0.2
+  badges: ^2.0.1
+  giffy_dialog: ^1.8.0
 
 dev_dependencies:
   flutter_test:
