@@ -13,13 +13,13 @@ class AccountView extends StatelessWidget {
       {Key key, this.animationController, this.animation, this.currentUser})
       : super(key: key);
 
-  final User currentUser;
+  final currentUser;
 
   @override
   Widget build(BuildContext context) {
     print(currentUser);
-    String username = currentUser.displayName;
-    String email = currentUser.email;
+    String username = currentUser["display_name"];
+    String email = currentUser["email"];
 
     return AnimatedBuilder(
       animation: animationController,

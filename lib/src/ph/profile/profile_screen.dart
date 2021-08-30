@@ -7,10 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:PublicHealth/src/services/authentication.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../login.dart';
 import '../ph_theme.dart';
 
+final userRef = FirebaseFirestore.instance.collection("users");
 final userTokenRef = FirebaseFirestore.instance.collection("user_tokens");
 
 class ProfileScreen extends StatefulWidget {
@@ -20,7 +23,7 @@ class ProfileScreen extends StatefulWidget {
 
   final AnimationController animationController;
   final BaseAuth auth;
-  final User user;
+  final user;
   final String loginFrom;
 
   @override
@@ -31,25 +34,46 @@ class _ProfileScreenState extends State<ProfileScreen>
     with TickerProviderStateMixin {
   Animation<double> topBarAnimation;
 
-  List<Widget> listViews = <Widget>[];
+  List<Widget> proflistViews = <Widget>[];
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
+  bool biometric = false;
 
   signOut() async {
+    print(widget.loginFrom);
     try {
       if (widget.loginFrom == "fb") {
         await widget.auth.signOutFacebook();
       } else {
         await widget.auth.signOutGoogle();
       }
-
-      removeUserToken(widget.user.uid);
+      resetUserInSharedPreferesces();
+      removeUserToken(widget.user["user_id"]);
       Navigator.of(context).pushAndRemoveUntil(
           CupertinoPageRoute(builder: (context) => LoginPage(auth: new Auth())),
           (Route<dynamic> route) => false);
     } catch (e) {
       print(e);
     }
+  }
+
+  readUserInfo(String userID) {
+    userRef.doc(userID).get().then((doc) => {
+          setState(() {
+            biometric = doc.data()["biometricEnabled"];
+            proflistViews = <Widget>[];
+          }),
+          addAllListData(biometric),
+        });
+  }
+
+  resetUserInSharedPreferesces() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("user_id", "");
+    await prefs.setString("display_name", "");
+    await prefs.setString("photo_url", "");
+    await prefs.setString("email", "");
+    await prefs.setString("source", "");
   }
 
   removeUserToken(userId) async {
@@ -66,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         CurvedAnimation(
             parent: widget.animationController,
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
-    addAllListData();
+    readUserInfo(widget.user["user_id"]);
 
     scrollController.addListener(() {
       if (scrollController.offset >= 24) {
@@ -90,6 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         }
       }
     });
+    readUserInfo(widget.user["user_id"]);
     super.initState();
   }
 
@@ -98,10 +123,10 @@ class _ProfileScreenState extends State<ProfileScreen>
     super.dispose();
   }
 
-  void addAllListData() {
+  void addAllListData(biometric) {
     const int count = 5;
-    listViews.clear();
-    listViews.add(
+    proflistViews.clear();
+    proflistViews.add(
       ProfileTitleView(
         titleTxt: 'Account',
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
@@ -112,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       ),
     );
 
-    listViews.add(
+    proflistViews.add(
       AccountView(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
@@ -123,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       ),
     );
 
-    listViews.add(
+    proflistViews.add(
       ProfileTitleView(
         titleTxt: 'Biometric Settings',
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
@@ -134,17 +159,19 @@ class _ProfileScreenState extends State<ProfileScreen>
       ),
     );
 
-    listViews.add(
+    proflistViews.add(
       SettingsView(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
             curve:
                 Interval((1 / count) * 3, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: widget.animationController,
+        currentUser: widget.user,
+        biometric: biometric,
       ),
     );
 
-    listViews.add(
+    proflistViews.add(
       ProfileTitleView(
         titleTxt: 'Logout',
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
@@ -155,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       ),
     );
 
-    listViews.add(
+    proflistViews.add(
       LogoutView(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: widget.animationController,
@@ -206,11 +233,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                   24,
               bottom: 62 + MediaQuery.of(context).padding.bottom,
             ),
-            itemCount: listViews.length,
+            itemCount: proflistViews.length,
             scrollDirection: Axis.vertical,
             itemBuilder: (BuildContext context, int index) {
               widget.animationController.forward();
-              return listViews[index];
+              return proflistViews[index];
             },
           );
         }

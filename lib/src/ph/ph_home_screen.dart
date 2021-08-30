@@ -18,7 +18,7 @@ class PHomeScreen extends StatefulWidget {
   PHomeScreen({Key key, this.title, this.auth, this.user, this.loginFrom})
       : super(key: key);
   final BaseAuth auth;
-  final User user;
+  final user;
   final String loginFrom;
 
   final String title;

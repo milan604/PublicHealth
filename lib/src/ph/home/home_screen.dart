@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
       : super(key: key);
 
   final AnimationController animationController;
-  final User user;
+  final user;
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -298,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               child: Row(
                                 children: <Widget>[
                                   Text(
-                                    widget.user.displayName,
+                                    widget.user["display_name"],
                                     textAlign: TextAlign.left,
                                     style: TextStyle(
                                       fontFamily: PHTheme.fontName,
@@ -311,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   Padding(
                                     padding: const EdgeInsets.only(left: 8),
                                     child: Image.network(
-                                      widget.user.photoURL,
+                                      widget.user["photo_url"],
                                       width: 30,
                                       height: 30,
                                     ),

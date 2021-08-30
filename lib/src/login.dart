@@ -10,10 +10,13 @@ import 'package:PublicHealth/src/globals.dart' as globals;
 import 'package:connectivity/connectivity.dart';
 import 'package:PublicHealth/src/connectivity.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final userRef = FirebaseFirestore.instance.collection("users");
 final userTokenRef = FirebaseFirestore.instance.collection("user_tokens");
 final DateTime timestamp = DateTime.now();
+final localAuth = LocalAuthentication();
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.auth}) : super(key: key);
@@ -28,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   MyConnectivity _connectivity = MyConnectivity.instance;
   User user;
   String netStatus = '';
+  bool biometric = false;
 
   @override
   void initState() {
@@ -46,6 +50,7 @@ class _LoginPageState extends State<LoginPage> {
       case ConnectivityResult.wifi:
         netStatus = "WiFi";
     }
+    getSharedInitialData();
     super.initState();
   }
 
@@ -53,6 +58,60 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     _connectivity.disposeStream();
     super.dispose();
+  }
+
+  getSharedInitialData() async {
+    SharedPreferences.getInstance().then((value) => {
+          if (globals.userID != "")
+            {
+              userRef.doc(globals.userID).get().then((doc) => {
+                    setState(() {
+                      biometric = doc.data()["biometricEnabled"];
+                    }),
+                  })
+            }
+        });
+  }
+
+  getSharedPrefData() async {
+    SharedPreferences.getInstance().then((value) => {
+          if (value.getString("user_id") == "")
+            {
+              widget.auth.signInGoogle().then((user) => {
+                    createUserFirestore(user.uid, user.displayName, user.email),
+                    createUserToken(user.uid),
+                    globals.userID = user.uid,
+                    setUserInSharedPreferesces(user, "google"),
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => PHomeScreen(
+                                auth: widget.auth,
+                                user: {
+                                  "display_name": user.displayName,
+                                  "photo_url": user.photoURL,
+                                  "email": user.email,
+                                  "user_id": user.uid
+                                },
+                                loginFrom: "google")))
+                  })
+            }
+          else
+            {
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) => PHomeScreen(
+                          auth: widget.auth,
+                          user: {
+                            "display_name": value.getString("display_name"),
+                            "photo_url": value.getString("photo_url"),
+                            "email": value.getString("email"),
+                            "user_id": value.getString("user_id")
+                          },
+                          loginFrom: value.getString("source"))))
+            }
+        });
   }
 
   Widget buildWaitingScreen() {
@@ -74,12 +133,18 @@ class _LoginPageState extends State<LoginPage> {
                   createUserFirestore(user.uid, user.displayName, user.email),
                   createUserToken(user.uid),
                   globals.userID = user.uid,
+                  setUserInSharedPreferesces(user, "google"),
                   Navigator.push(
                       context,
                       CupertinoPageRoute(
                           builder: (context) => PHomeScreen(
                               auth: widget.auth,
-                              user: user,
+                              user: {
+                                "display_name": user.displayName,
+                                "photo_url": user.photoURL,
+                                "email": user.email,
+                                "user_id": user.uid
+                              },
                               loginFrom: "google")))
                 });
           },
@@ -110,11 +175,19 @@ class _LoginPageState extends State<LoginPage> {
                   createUserFirestore(user.uid, user.displayName, user.email),
                   createUserToken(user.uid),
                   globals.userID = user.uid,
+                  setUserInSharedPreferesces(user, "fb"),
                   Navigator.push(
                       context,
                       CupertinoPageRoute(
                           builder: (context) => PHomeScreen(
-                              auth: widget.auth, user: user, loginFrom: "fb")))
+                              auth: widget.auth,
+                              user: {
+                                "display_name": user.displayName,
+                                "photo_url": user.photoURL,
+                                "email": user.email,
+                                "user_id": user.uid
+                              },
+                              loginFrom: "fb")))
                 });
           },
           child: Container(
@@ -132,6 +205,47 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ));
+  }
+
+  Widget _biometricLogin() {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(vertical: 13),
+        alignment: Alignment.center,
+        // decoration: BoxDecoration(
+        //   borderRadius: BorderRadius.all(Radius.circular(5)),
+        //   border: Border.all(color: Colors.white, width: 2),
+        // ),
+        child: InkWell(
+            splashColor: Colors.white,
+            onTap: () {
+              loginWithBiometrics();
+            },
+            child: Column(
+              children: [
+                Text(
+                  'Finger Print Login',
+                  style: GoogleFonts.portLligatSans(
+                    textStyle: Theme.of(context).textTheme.headline4,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Image.asset(
+                  "assets/images/ph/fingerprint.png",
+                  width: 50,
+                  height: 50,
+                ),
+              ],
+            )),
+      ),
+    );
   }
 
   createUserFirestore(userId, username, email) async {
@@ -158,6 +272,27 @@ class _LoginPageState extends State<LoginPage> {
       userTokenRef.doc(userId).update({"user_id": userId, "token": token});
       doc = await userRef.doc(userId).get();
     }
+  }
+
+  loginWithBiometrics() async {
+    bool canCheckBiometrics = await localAuth.canCheckBiometrics;
+    if (canCheckBiometrics) {
+      final result = await localAuth.authenticateWithBiometrics(
+        localizedReason: 'Please verify to login using Fingerprint',
+      );
+      if (result) {
+        getSharedPrefData();
+      }
+    }
+  }
+
+  setUserInSharedPreferesces(user, source) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("user_id", user.uid);
+    await prefs.setString("display_name", user.displayName);
+    await prefs.setString("photo_url", user.photoURL);
+    await prefs.setString("email", user.email);
+    await prefs.setString("source", source);
   }
 
   Widget _title() {
@@ -233,6 +368,10 @@ class _LoginPageState extends State<LoginPage> {
                 height: 20,
               ),
               _fbLoginButton(),
+              SizedBox(
+                height: 20,
+              ),
+              biometric ? _biometricLogin() : Text(""),
             ],
           ),
         ),

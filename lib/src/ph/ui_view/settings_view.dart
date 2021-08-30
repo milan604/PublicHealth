@@ -1,23 +1,61 @@
 import 'package:flutter/material.dart';
 import '../ph_theme.dart';
+import 'package:flutter/material.dart';
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:local_auth/local_auth.dart';
 
-class SettingsView extends StatelessWidget {
+final userRef = FirebaseFirestore.instance.collection("users");
+final localAuth = LocalAuthentication();
+
+class SettingsView extends StatefulWidget {
   final AnimationController animationController;
   final Animation animation;
 
-  const SettingsView({Key key, this.animationController, this.animation})
+  const SettingsView(
+      {Key key,
+      this.animationController,
+      this.animation,
+      this.currentUser,
+      this.biometric})
       : super(key: key);
+  final currentUser;
+  final bool biometric;
+
+  @override
+  _SettingsViewState createState() => _SettingsViewState();
+}
+
+class _SettingsViewState extends State<SettingsView> {
+  bool biometricValid = false;
+  @override
+  void initState() {
+    checkBiometric();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  checkBiometric() async {
+    bool canCheckBiometrics = await localAuth.canCheckBiometrics;
+    setState(() {
+      biometricValid = canCheckBiometrics;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: animationController,
+      animation: widget.animationController,
       builder: (BuildContext context, Widget child) {
         return FadeTransition(
-          opacity: animation,
+          opacity: widget.animation,
           child: new Transform(
             transform: new Matrix4.translationValues(
-                0.0, 30 * (1.0 - animation.value), 0.0),
+                0.0, 30 * (1.0 - widget.animation.value), 0.0),
             child: Column(
               children: <Widget>[
                 Padding(
@@ -90,17 +128,6 @@ class SettingsView extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  // Column(children: <Widget>[
-                                  //   Padding(
-                                  //     padding: const EdgeInsets.only(
-                                  //       left: 115,
-                                  //       right: 16,
-                                  //       top: 10,
-                                  //       bottom: 15,
-                                  //     ),
-                                  //     child: _toggleBiometric(),
-                                  //   ),
-                                  // ]),
                                   Column(children: <Widget>[
                                     Padding(
                                       padding: const EdgeInsets.only(
@@ -109,10 +136,25 @@ class SettingsView extends StatelessWidget {
                                         top: 10,
                                         bottom: 15,
                                       ),
-                                      child: Image.asset(
-                                          "assets/images/ph/comingsoon.png"),
+                                      child: biometricValid
+                                          ? _toggleBiometric(
+                                              widget.currentUser["user_id"])
+                                          : Text(
+                                              "Sorry! Your Device Doesnot Support Biometric"),
                                     ),
                                   ]),
+                                  // Column(children: <Widget>[
+                                  //   Padding(
+                                  //     padding: const EdgeInsets.only(
+                                  //       left: 115,
+                                  //       right: 16,
+                                  //       top: 10,
+                                  //       bottom: 15,
+                                  //     ),
+                                  //     child: Image.asset(
+                                  //         "assets/images/ph/comingsoon.png"),
+                                  //   ),
+                                  // ]),
                                 ],
                               ),
                             ],
@@ -139,20 +181,30 @@ class SettingsView extends StatelessWidget {
     );
   }
 
-  // Widget _toggleBiometric() {
-  //   return LiteRollingSwitch(
-  //     //initial value
-  //     value: globals.bioFlag,
-  //     textOn: 'ON',
-  //     textOff: 'OFF',
-  //     colorOn: Colors.greenAccent[700],
-  //     colorOff: Colors.redAccent[700],
-  //     iconOn: Icons.done,
-  //     iconOff: Icons.remove_circle_outline,
-  //     textSize: 15.0,
-  //     onChanged: (bool state) {
-  //       globals.bioFlag = state;
-  //     },
-  //   );
-  // }
+  addBiometricInfo(String userID, bool flag) async {
+    DocumentSnapshot doc = await userRef.doc(userID).get();
+    if (doc.exists) {
+      userRef.doc(userID).update({
+        "biometricEnabled": flag,
+      });
+      doc = await userRef.doc(userID).get();
+    }
+  }
+
+  Widget _toggleBiometric(userID) {
+    return LiteRollingSwitch(
+      //initial value
+      value: widget.biometric,
+      textOn: 'ON',
+      textOff: 'OFF',
+      colorOn: Colors.greenAccent[700],
+      colorOff: Colors.redAccent[700],
+      iconOn: Icons.done,
+      iconOff: Icons.remove_circle_outline,
+      textSize: 15.0,
+      onChanged: (bool state) {
+        addBiometricInfo(userID, state);
+      },
+    );
+  }
 }
