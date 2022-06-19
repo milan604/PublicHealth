@@ -1,50 +1,34 @@
 {
   "project_info": {
-    "project_number": "786945435262",
-    "firebase_url": "https://public-health-7d949.firebaseio.com",
-    "project_id": "public-health-7d949",
-    "storage_bucket": "public-health-7d949.appspot.com"
+    "project_number": "203448282512",
+    "project_id": "publichealth-f0ddd",
+    "storage_bucket": "publichealth-f0ddd.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:786945435262:android:35ad393b690d2e93905a2f",
+        "mobilesdk_app_id": "1:203448282512:android:7fda8e4edf1c9f6359d715",
         "android_client_info": {
-          "package_name": "com.mlano.PublicHealth"
+          "package_name": "com.mlan.PublicHealth"
         }
       },
       "oauth_client": [
         {
-          "client_id": "786945435262-fd1vacodbh0ougg8lnmrtcdp5vf9clsr.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mlano.PublicHealth",
-            "certificate_hash": "7eaa96eac0cc251998e4069b313096258761c0e9"
-          }
-        },
-        {
-          "client_id": "786945435262-guftid7uf4r2erpm65gi0h3hnrou5io1.apps.googleusercontent.com",
+          "client_id": "203448282512-ijvu4tbfqu55su4oum1h5kkqom0mcn98.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDs_mC0v4uNkIG_dpFD8UaHPg_XGaOxXD8"
+          "current_key": "AIzaSyBNPkZQsAL2HPP0s1JwaLDX4FXkxdpVJ9k"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "786945435262-guftid7uf4r2erpm65gi0h3hnrou5io1.apps.googleusercontent.com",
+              "client_id": "203448282512-ijvu4tbfqu55su4oum1h5kkqom0mcn98.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "786945435262-f0thnk2pe8ubd5rcjurl8kf79pghcfdt.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.mlan.PublicHealth"
-              }
             }
           ]
         }
